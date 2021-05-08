@@ -1,0 +1,27 @@
+---
+# Config file for automatic testing at travis-ci.org
+
+language: minimal
+
+os:
+  - linux
+
+services:
+  - docker
+
+before_install:
+  #- git pull dcorre/gmadet:travis
+  - echo "Noting"
+
+script:
+  # run tests
+  - echo "To write"
+
+cache:
+  directories:
+  - $HOME/.cache/pip
+  - $HOME/build/.cache/pip
+
+# perform coverage
+after_success:
+  - bash <(curl -s https://codecov.io/bash) -v -s reports/
