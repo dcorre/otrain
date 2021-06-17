@@ -1,34 +1,110 @@
-#!/usr/bin/env python3
+#! /usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Author: David Corre, IAP, corre@iap.fr
-
-"""
+#
+# @file		train.py
+# @brief	Train a CNN for detecting moving point-sources
+# @date		01/11/2018
+#
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#
+# 	This file part of:	P9 search scripts
+#
+# 	Copyright:		(C) 2018 IAP/CNRS/SorbonneU
+#
+# 	Author:			Emmanuel Bertin (IAP)
+#
+# 	License:		GNU General Public License
+#
+# 	Bertinoscopic is free software: you can redistribute it and/or modify
+# 	it under the terms of the GNU General Public License as published by
+# 	the Free Software Foundation, either version 3 of the License, or
+# 	(at your option) any later version.
+# 	Bertinoscopic is distributed in the hope that it will be useful,
+# 	but WITHOUT ANY WARRANTY; without even the implied warranty of
+# 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# 	GNU General Public License for more details.
+# 	You should have received a copy of the GNU General Public License
+# 	along with Bertinoscopic. If not, see <http://www.gnu.org/licenses/>.
+#
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#    Original script modified by: David Corre (IJCLab/CNRS)
 
 import sys
 import os
 import errno
+import shutil
 
 import numpy as np
 import matplotlib.pyplot as plt
-import keras
+import tensorflow as tf
+from tensorflow import keras
 import argparse
+from tensorflow.keras.utils import multi_gpu_model
 from tbd_cnn.utils import getpath, rm_p, mkdir_p
 
+from tbd_cnn.plot_results import plot_roc, plot_recall, plot_prob_distribution
+from tbd_cnn.diagnostics import get_diagnostics
 
-def train(path_cube, path_model, modelname, epochs,
-          frac=0.1, dropout=0.3, nb_gpu=1):
-    """Train CNN with simulated data"""
 
-    path_model = os.path.join(path_model, 'CNN_training/')
-    mkdir_p(path_model)
-
-    # Fraction of data used for the validation test
-    fract = frac
+def build_model(ima, nclass, dropout=0.3):
+    """build model"""
     # define dropout percentageof each dropout
     dprob = np.array([dropout, dropout, dropout])
     # define padding
     padding = "same"  # valid, same
+    model = keras.models.Sequential()
+
+    model.add(
+        keras.layers.Conv2D(
+            16, (3, 3), activation="elu", padding=padding, input_shape=ima.shape[1:]
+        )
+    )
+    model.add(
+        keras.layers.Conv2D(
+            32, (3, 3), activation="elu", padding=padding, input_shape=ima.shape[1:]
+        )
+    )
+    # model.add(keras.layers.BatchNormalization())
+    model.add(keras.layers.AveragePooling2D(pool_size=(2, 2)))
+    # model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))
+    # model.add(keras.layers.Dropout(dprob[0]))
+    model.add(keras.layers.Conv2D(64, (3, 3), activation="elu", padding=padding))
+    # model.add(keras.layers.BatchNormalization())
+    model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))
+    model.add(keras.layers.Dropout(dprob[1]))
+    model.add(keras.layers.Conv2D(128, (3, 3), activation="elu", padding=padding))
+    # model.add(keras.layers.BatchNormalization())
+    model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))
+    model.add(keras.layers.Dropout(dprob[1]))
+    model.add(keras.layers.Conv2D(256, (3, 3), activation="elu", padding=padding))
+    # model.add(keras.layers.BatchNormalization())
+    model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))
+    # model.add(keras.layers.Dropout(dprob[2]))
+    model.add(keras.layers.Flatten())
+    model.add(keras.layers.Dense(512, activation="elu"))
+    # model.add(keras.layers.BatchNormalization())
+    model.add(keras.layers.Dropout(dprob[2]))
+    model.add(keras.layers.Dense(256, activation="elu"))
+    # model.add(keras.layers.BatchNormalization())
+    # model.add(keras.layers.Dropout(0.3))
+    model.add(keras.layers.Dense(nclass, activation="softmax"))
+    return model
+
+
+def train(path_cube, path_model, modelname, epochs, condition = None, frac=0.1, dropout=0.3):
+    """Train CNN with simulated data"""
+
+    # condition: is the training executed in the size optimisation loop or not
+    # condition = None if not
+    # condition = [size,randomize]
+
+    gpus = -1
+    path_model = os.path.join(path_model, "CNN_training/")
+    mkdir_p(path_model)
+
+    # Fraction of data used for the validation test
+    fract = frac
+
     # number of epochs
     epochs = epochs
     # outputname for the trained model
@@ -41,79 +117,80 @@ def train(path_cube, path_model, modelname, epochs,
     mag = data["mags"]
     errmag = data["errmags"]
     band = data["filters"]
-    cand_ids = data["candids"]
+    # candids=data["candids"]
     nclass = lab.shape[1]
     n = ima.shape[0]
-    nt = int(n * fract)
+
+    if condition is None:
+        size = n
+        randomize = np.arange(n)
+        np.random.shuffle(randomize)
+    else:
+        size = condition[0]
+        randomize = condition[1]
+    nt = int(size * fract)
 
     print("Shuffling data ...", end="\r", flush=True)
-    randomize = np.arange(n)
-    np.random.shuffle(randomize)
     ima = ima[randomize]
     lab = lab[randomize]
     mag = mag[randomize]
     errmag = errmag[randomize]
     band = band[randomize]
-    cand_ids = cand_ids[randomize]
+    # candid=candids[randomize]
+    nclass = lab.shape[1]
 
     print("Splitting dataset ...", end="\r", flush=True)
-    imal = ima[nt:]
-    labl = lab[nt:]
-    magl = mag[nt:]
-    errmagl = errmag[nt:]
-    bandl = band[nt:]
-    cand_idsl = cand_ids[nt:]
+    imal = ima[nt:size]
+    labl = lab[nt:size]
+    magl = mag[nt:size]
+    errmagl = errmag[nt:size]
+    bandl = band[nt:size]
+    # candidl=candid[nt:size]
 
     imat = ima[:nt]
     labt = lab[:nt]
     magt = mag[:nt]
     errmagt = errmag[:nt]
     bandt = band[:nt]
-    cand_idst = cand_ids[:nt]
+    # candidt=candid[:nt]
 
-    model = keras.models.Sequential()
-
-    model.add(
-        keras.layers.Conv2D(64, (3, 3), activation="elu",
-                            padding=padding,
-                            input_shape=ima.shape[1:])
+    outdir = os.path.join("validation", "datacube_test")
+    mkdir_p(outdir)
+    npz_name = "cube_val.npz"
+    path_cube_test = os.path.join(outdir, npz_name)
+    np.savez(
+        path_cube_test,
+        cube=imat,
+        labels=labt,
+        mags=magt,
+        errmags=errmagt,
     )
-    model.add(keras.layers.BatchNormalization())
-    model.add(keras.layers.AveragePooling2D(pool_size=(2, 2)))
-    # model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))
-    model.add(keras.layers.Dropout(dprob[0]))
-    model.add(
-        keras.layers.Conv2D(
-            128, (3, 3), activation="elu", padding=padding))
-    model.add(keras.layers.BatchNormalization())
-    model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))
-    model.add(keras.layers.Dropout(dprob[1]))
-    model.add(
-        keras.layers.Conv2D(
-            256, (3, 3), activation="elu", padding=padding))
-    model.add(keras.layers.BatchNormalization())
-    model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))
-    model.add(keras.layers.Dropout(dprob[1]))
-    model.add(
-        keras.layers.Conv2D(
-            256, (3, 3), activation="elu", padding=padding))
-    model.add(keras.layers.BatchNormalization())
-    model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))
-    model.add(keras.layers.Dropout(dprob[2]))
-    model.add(keras.layers.Flatten())
-    model.add(keras.layers.Dense(512, activation="elu"))
-    model.add(keras.layers.BatchNormalization())
-    model.add(keras.layers.Dropout(dprob[2]))
-    model.add(keras.layers.Dense(32, activation="elu"))
-    model.add(keras.layers.BatchNormalization())
-    model.add(keras.layers.Dropout(dprob[2]))
-    model.add(keras.layers.Dense(nclass, activation="softmax"))
 
-    model.summary()
+    model = build_model(ima, nclass, dropout)
+    if gpus > 0:
+        parallel_model = multi_gpu_model(model, gpus=gpus)
 
-    if nb_gpu > 1:
-        # need to write code to allow usage of multiple GPUs.
-        raise Exception("Multi GPU is not yet available. Set nb_gpu to 1.")
+        parallel_model.compile(
+            loss="categorical_crossentropy",
+            optimizer=keras.optimizers.Adam(lr=0.001),
+            # optimizer=keras.optimizers.Nadam(),
+            metrics=["accuracy"],
+        )
+
+        parallel_model.fit(
+            imal,
+            labl,
+            batch_size=1024,
+            epochs=epochs,
+            verbose=1,
+            validation_data=(imat, labt),
+        )
+
+        score = parallel_model.evaluate(imat, labt, verbose=0)
+        # save does not work on multi_gpu_model
+        # parallel_model.save(model_name)
+        labp = parallel_model.predict(imat)
+
     else:
 
         model.compile(
@@ -132,8 +209,7 @@ def train(path_cube, path_model, modelname, epochs,
         #        embeddings_freq=0, embeddings_layer_names=None,
         #        embeddings_metadata=None, embeddings_data=None,
         #        update_freq='epoch'))
-
-        model.fit(
+        history = model.fit(
             imal,
             labl,
             batch_size=1024,
@@ -146,50 +222,39 @@ def train(path_cube, path_model, modelname, epochs,
 
     model.save(model_name)
 
-    trange = np.arange(0.5, 1.0, 0.0001)
-    fig, ax = plt.subplots()
-    ax.set_xlabel("FPR")
-    ax.set_ylabel("TPR")
-    mag_min = np.min(magt[magt != 99])
-    mag_max = np.max(magt[magt != 99])
-    for maglim in np.linspace(mag_min, mag_max, 6):
-        labpm = labp[magt < maglim]
-        labtm = labt[magt < maglim]
-        labpf = labpm[labtm[:, 1] <= 0.5]
-        labpt = labpm[labtm[:, 1] > 0.5]
-        tpr = [np.mean(labpt[:, 1] > t) for t in trange]
-        fpr = [np.mean(labpf[:, 1] > t) for t in trange]
-        plt.plot(fpr, tpr, label="mag < %.2f" % maglim)
-    legend = ax.legend(loc="lower right")
-    plt.savefig(os.path.join(path_model, modelname + "_ROC_mag.png"))
 
-    # ROC with dmag
-    fig, ax = plt.subplots()
-    ax.set_xlabel("FPR")
-    ax.set_ylabel("TPR")
-    errmag_min = np.min(abs(errmagt[errmagt != 0]))
-    errmag_max = np.max(abs(errmagt[errmagt != 0]))
-    for errmaglim in np.linspace(errmag_min, errmag_max, 6):
-        labpm = labp[errmagt < errmaglim]
-        labtm = labt[errmagt < errmaglim]
-        labpf = labpm[labtm[:, 1] <= 0.5]
-        labpt = labpm[labtm[:, 1] > 0.5]
-        tpr = [np.mean(labpt[:, 1] > t) for t in trange]
-        fpr = [np.mean(labpf[:, 1] > t) for t in trange]
-        plt.plot(fpr, tpr, label="errmag < %.2f" % errmaglim)
-    legend = ax.legend(loc="lower right")
-    plt.savefig(os.path.join(path_model, modelname + "_ROC_errmag.png"))
+    diag = get_diagnostics(model_name, path_cube_test, 0.53)
+    # if this training is not run within the size_optimize loop, we can plot the following figures
+    if condition is None:
+        _, axis = plt.subplots()
+        axis.set_xlabel("epoch")
+        axis.set_ylabel("loss")
+        plt.plot(history.history["loss"])
+        plt.plot(history.history["val_loss"])
+        plt.title("model loss")
+        plt.legend(["train", "test"], loc="upper left")
+        plt.savefig(os.path.join(path_model, modelname + "_loss_vs_epochs.png"))
 
-    fig, ax = plt.subplots()
-    ax.set_xlabel("FPR")
-    ax.set_ylabel("TPR")
-    for band in ["g", "r", "i", "z"]:
-        labpm = labp[bandt == band]
-        labtm = labt[bandt == band]
-        labpf = labpm[labtm[:, 1] <= 0.5]
-        labpt = labpm[labtm[:, 1] > 0.5]
-        tpr = [np.mean(labpt[:, 1] > t) for t in trange]
-        fpr = [np.mean(labpf[:, 1] > t) for t in trange]
-        plt.plot(fpr, tpr, label="%s" % band)
-    legend = ax.legend(loc="lower right")
-    plt.savefig(os.path.join(path_model, modelname + "_ROC_band.png"))
+        _, axis = plt.subplots()
+        axis.set_xlabel("epoch")
+        axis.set_ylabel("accuracy")
+        plt.plot(history.history["accuracy"])
+        plt.plot(history.history["val_accuracy"])
+        plt.title("model accuracy")
+        plt.legend(["train", "test"], loc="lower left")
+        plt.savefig(os.path.join(path_model, modelname + "_accuracy_vs_epochs.png"))
+
+        plot_roc(model_name, path_cube_test, path_model, 0.53)
+        plot_recall(model_name, path_cube_test, path_model, 0.53)
+        plot_prob_distribution(model_name, path_cube_test, path_model)
+
+        print(f"average accuracy score: {diag[0]}")
+        print("\tPrecision: %1.3f" % diag[1])
+        print("\tRecall: %1.3f" % diag[2])
+        print("\tF1 score: %1.3f" % diag[3])
+        print("\tMCC score: %1.3f" % diag[5])
+        print(f"\tConfusion matrix: {diag[4]}")
+    else:
+        ()
+
+    return history, diag
