@@ -57,12 +57,12 @@ def convert(path_datacube, cubename, path_cutouts, frac_true):
     cand_ids = []
     filters = []
     counter_true = 0
-    
+    print("Processing the cutouts... It can take few minutes")
     for cand in truelist:
         if counter_true < Ncand_true_max:
             hdus = fits.open(cand, memmap=False)
             if len(hdus)>1:
-                head = hdus[index_multiext_fits(hdus)].header
+                head = hdus[0].header
                 if "EDGE" in head:
                     if  head["EDGE"] == "False":
                         labels += [1]
@@ -72,19 +72,29 @@ def convert(path_datacube, cubename, path_cutouts, frac_true):
                         cand_ids += [head["CANDID"]]
                         cube.append(hdus[0].data)
                 else:
+                    
                     labels += [1]
-                    if "MAG" in head:
-                        mags += [head["MAG"]]
-                    elif 'HIERARCH mag_calib' in head:
+                    if 'HIERARCH mag_calib' in head:
                         mags += [hdus[0].header['HIERARCH mag_calib']]
+                    elif "MAG" in head:
+                        mags += [head["MAG"]]
                     else:
                         mags += ['0']
+                        
                     if "MAGERR" in head:
                         errmags += [head["MAGERR"]]
                     else:
                         errmags += ['0']#[hdus[0].header['MAGERR']]
                     
-                    filters += [head["FILTER"]]
+                    if "FILTER" in head:
+                        filters += [head["FILTER"]]
+                    elif "FILTER" in hdus[index_multiext_fits(hdus)].header:
+                        
+                        filters += [hdus[index_multiext_fits(hdus)].\
+                                    header["FILTER"]]
+                    else:
+                        filters += ["Clear"]
+                        
                     if "CANDID" in head:
                         cand_ids += [head["CANDID"]]
                     elif 'NAME' in head:
@@ -116,7 +126,7 @@ def convert(path_datacube, cubename, path_cutouts, frac_true):
         if counter_false < Ncand_false_max:
             hdus = fits.open(cand, memmap=False)
             if len(hdus)>1:
-                head = hdus[index_multiext_fits(hdus)].header
+                head = hdus[0].header
                 
                 if "EDGE" in head:
                     if head["EDGE"] == "False":
@@ -128,18 +138,26 @@ def convert(path_datacube, cubename, path_cutouts, frac_true):
                         cube.append(hdus[0].data)
                 else:
                     labels += [0]
-                    if "MAG" in head:
-                        mags += [head["MAG"]]
-                    elif 'HIERARCH mag_calib' in head:
+                    if 'HIERARCH mag_calib' in head:
                         mags += [hdus[0].header['HIERARCH mag_calib']]
+                    elif "MAG" in head:
+                        mags += [head["MAG"]]
                     else:
                          mags += ['0']
+                         
                     if "MAGERR" in head:
                         errmags += [head["MAGERR"]]
                     else:
                         errmags += ['0']#[hdus[0].header['MAGERR']]
                     
-                    filters += [head["FILTER"]]
+                    if "FILTER" in head:
+                        filters += [head["FILTER"]]
+                    elif "FILTER" in hdus[index_multiext_fits(hdus)].header:
+                        filters += [hdus[index_multiext_fits(hdus)].\
+                                    header["FILTER"]]
+                    else:
+                        filters += ["Clear"]
+                        
                     if "CANDID" in head:
                         cand_ids += [head["CANDID"]]
                     elif "NAME" in head:
@@ -182,7 +200,6 @@ def convert(path_datacube, cubename, path_cutouts, frac_true):
     #        del cube[i]
     
     cube = np.asarray(cube, dtype=np.float32)
-    print("cube.ndim",cube.ndim, "cube.shape",cube.shape)
     if cube.ndim < 4:
         cube = np.reshape(
             cube, [
