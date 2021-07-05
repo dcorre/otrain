@@ -57,7 +57,7 @@ def main():
         "--n_sections",
         dest="frac",
         required=False,
-        type=float,
+        type=int,
         default=20,
         help="The number of sections we want to divide the dataset into."
         "(Default: 20)",

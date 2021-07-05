@@ -8,6 +8,7 @@
 import sys
 import os
 import errno
+import shutil
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -50,11 +51,14 @@ def plot_recall(path_model, path_cube_test, path_plot, threshold=0.53):
 
             # get the index of the maximum value of the f-score
             x = np.argmax(fscore)
-            print("Best Threshold=%f, F-Score=%.3f" % (thresholds[x], fscore[x]))
+            print(
+                "Interval : [%.3f,%.3f], Best Threshold=%.3f, F-Score=%.3f"
+                % (lim_min, lim, thresholds[x], fscore[x])
+            )
             plt.plot(
                 recall, precision, label="{0:.2f} < mag < {1:.2f}".format(lim_min, lim)
             )
-            #plt.scatter(recall[x], precision[x], marker='o', color='black', label='Best = %f' % thresholds[x])
+            # plt.scatter(recall[x], precision[x], marker='o', color='black', label='Best = %f' % thresholds[x])
         lim_min = lim
     legend = axis.legend(loc="lower left")
     plt.savefig(os.path.join(path_plot, "recall.png"))
@@ -81,9 +85,12 @@ def plot_roc(path_model, path_cube_test, path_plot, threshold=0.53):
 
             # get the index of the maximum value of gmean
             ix = np.argmax(gmeans)
-            print("Best Threshold=%f, G-Mean=%.3f" % (thresholds[ix], gmeans[ix]))
+            print(
+                "Interval: [%.3f,%.3f], Best Threshold=%.3f, G-Mean=%.3f"
+                % (lim_min, lim, thresholds[ix], gmeans[ix])
+            )
             plt.plot(fpr, tpr, label="{0:.2f} < mag < {1:.2f}".format(lim_min, lim))
-            #plt.scatter(fpr[ix], tpr[ix], marker='o', color='black', label='Best = %f' % thresholds[ix])
+            # plt.scatter(fpr[ix], tpr[ix], marker='o', color='black', label='Best = %f' % thresholds[ix])
         lim_min = lim
     legend = axis.legend(loc="lower left")
     plt.savefig(os.path.join(path_plot, "ROC.png"))

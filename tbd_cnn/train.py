@@ -43,7 +43,7 @@ from tensorflow.keras.utils import multi_gpu_model
 from tbd_cnn.utils import getpath, rm_p, mkdir_p
 
 from tbd_cnn.plot_results import plot_roc, plot_recall, plot_prob_distribution
-from tbd_cnn.diagnostics import get_diagnostics
+from tbd_cnn.diagnostics import get_diagnostics, generate_cutouts, print_diagnostics
 
 
 def build_model(ima, nclass, dropout=0.3):
@@ -117,7 +117,7 @@ def train(path_cube, path_model, modelname, epochs, condition = None, frac=0.1, 
     mag = data["mags"]
     errmag = data["errmags"]
     band = data["filters"]
-    # candids=data["candids"]
+    candids=data["candids"]
     nclass = lab.shape[1]
     n = ima.shape[0]
 
@@ -136,7 +136,7 @@ def train(path_cube, path_model, modelname, epochs, condition = None, frac=0.1, 
     mag = mag[randomize]
     errmag = errmag[randomize]
     band = band[randomize]
-    # candid=candids[randomize]
+    candid=candids[randomize]
     nclass = lab.shape[1]
 
     print("Splitting dataset ...", end="\r", flush=True)
@@ -145,14 +145,14 @@ def train(path_cube, path_model, modelname, epochs, condition = None, frac=0.1, 
     magl = mag[nt:size]
     errmagl = errmag[nt:size]
     bandl = band[nt:size]
-    # candidl=candid[nt:size]
+    candidl=candid[nt:size]
 
     imat = ima[:nt]
     labt = lab[:nt]
     magt = mag[:nt]
     errmagt = errmag[:nt]
     bandt = band[:nt]
-    # candidt=candid[:nt]
+    candidt=candid[:nt]
 
     outdir = os.path.join("validation", "datacube_test")
     mkdir_p(outdir)
@@ -160,10 +160,11 @@ def train(path_cube, path_model, modelname, epochs, condition = None, frac=0.1, 
     path_cube_test = os.path.join(outdir, npz_name)
     np.savez(
         path_cube_test,
-        cube=imat,
-        labels=labt,
-        mags=magt,
-        errmags=errmagt,
+        cube = imat,
+        labels = labt,
+        mags = magt,
+        errmags = errmagt,
+        candids = candidt,
     )
 
     model = build_model(ima, nclass, dropout)
@@ -223,7 +224,7 @@ def train(path_cube, path_model, modelname, epochs, condition = None, frac=0.1, 
     model.save(model_name)
 
 
-    diag = get_diagnostics(model_name, path_cube_test, 0.53)
+    diags = get_diagnostics(model_name, path_cube_test, 0.53)
     # if this training is not run within the size_optimize loop, we can plot the following figures
     if condition is None:
         _, axis = plt.subplots()
@@ -247,14 +248,10 @@ def train(path_cube, path_model, modelname, epochs, condition = None, frac=0.1, 
         plot_roc(model_name, path_cube_test, path_model, 0.53)
         plot_recall(model_name, path_cube_test, path_model, 0.53)
         plot_prob_distribution(model_name, path_cube_test, path_model)
-
-        print(f"average accuracy score: {diag[0]}")
-        print("\tPrecision: %1.3f" % diag[1])
-        print("\tRecall: %1.3f" % diag[2])
-        print("\tF1 score: %1.3f" % diag[3])
-        print("\tMCC score: %1.3f" % diag[5])
-        print(f"\tConfusion matrix: {diag[4]}")
+        print_diagnostics(diags)
+        generate_cutouts(model_name, path_cube_test, path_model, 0.53)
+        
     else:
         ()
 
-    return history, diag
+    return history, diags

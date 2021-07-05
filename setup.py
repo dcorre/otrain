@@ -66,6 +66,10 @@ setup(
             'tbd_cnn-train = tbd_cnn.cli.train:main',
             'tbd_cnn-infer = tbd_cnn.cli.infer:main',
             'tbd_cnn-checkinfer = tbd_cnn.cli.checkinfer:main',
+            'tbd_cnn-diagonstic = tbd_cnn.cli.diagnostic:main',
+            'tbd_cnn-optimize_size = tbd_cnn.cli.optimize_size:main',
+            'tbd_cnn-plot_results = tbd_cnn.cli.plot_results:main',
+
         ],
     },
     install_requires=requirements,
