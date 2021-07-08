@@ -11,12 +11,14 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 from tbd_cnn.train import train
+from tbd_cnn.utils import mkdir_p
 
-
-def optimize_dataset_size(
-    path_cube, path_model, modelname, epochs, n_sections=21, dropout=0.3
+def optimise_dataset_size(
+    path_cube, path_model, modelname, epochs, n_sections=21, dropout=0.3, outdir="optimise_dataset_dir"
 ):
     """trains the model on different sizes and plots the evolution of results vs dataset sizes"""
+
+    mkdir_p(outdir)
 
     data = np.load(path_cube)
     ima = data["cube"]
@@ -39,8 +41,9 @@ def optimize_dataset_size(
 
         # train function return history of the training,
         # and the metrics from get_diagnostics in diagnostics.py
+        modelname_iteration = modelname + "_size_" + str(size)
         history, scores = train(
-            path_cube, path_model, modelname, epochs, [size, randomize]
+            path_cube, path_model, modelname_iteration, epochs, condition=[size, randomize]
         )
 
         mcc.append(scores[5])
@@ -61,16 +64,16 @@ def optimize_dataset_size(
 
     plt.plot(sizes, acc, label="Accuracy")
     legend = axis.legend(loc="lower left")
-    plt.savefig(os.path.join(path_model, modelname + "_scores_dataset_size.png"))
+    plt.savefig(os.path.join(outdir, modelname + "_scores_dataset_size.png"))
 
     _, axis = plt.subplots()
     axis.set_xlabel("dataset size")
     axis.set_ylabel("delta accuracy")
     plt.plot(sizes, delta_acc)
-    plt.savefig(os.path.join(path_model, modelname + "_ecart_accuracy_size.png"))
+    plt.savefig(os.path.join(outdir, modelname + "_ecart_accuracy_size.png"))
 
     _, axis = plt.subplots()
     axis.set_xlabel("dataset size")
     axis.set_ylabel("loss")
     plt.plot(sizes, losses)
-    plt.savefig(os.path.join(path_model, modelname + "_loss_dataset_size.png"))
+    plt.savefig(os.path.join(outdir, modelname + "_loss_dataset_size.png"))
