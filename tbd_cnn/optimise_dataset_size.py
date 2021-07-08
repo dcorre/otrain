@@ -13,8 +13,15 @@ import matplotlib.pyplot as plt
 from tbd_cnn.train import train
 from tbd_cnn.utils import mkdir_p
 
+
 def optimise_dataset_size(
-    path_cube, path_model, modelname, epochs, n_sections=21, dropout=0.3, outdir="optimise_dataset_dir"
+    path_cube,
+    path_model,
+    modelname,
+    epochs,
+    n_sections=21,
+    dropout=0.3,
+    outdir="optimise_dataset_dir",
 ):
     """trains the model on different sizes and plots the evolution of results vs dataset sizes"""
 
@@ -43,7 +50,11 @@ def optimise_dataset_size(
         # and the metrics from get_diagnostics in diagnostics.py
         modelname_iteration = modelname + "_size_" + str(size)
         history, scores = train(
-            path_cube, path_model, modelname_iteration, epochs, condition=[size, randomize]
+            path_cube,
+            path_model,
+            modelname_iteration,
+            epochs,
+            condition=[size, randomize],
         )
 
         mcc.append(scores[5])

@@ -48,36 +48,31 @@ def main():
         required=False,
         type=float,
         default=0.5,
-        help="The threshold to define classes True and False"
-        "(Default: 0.5)",
+        help="The threshold to define classes True and False" "(Default: 0.5)",
     )
-
 
     args = parser.parse_args()
 
-    #create the folder for the plots 
+    # create the folder for the plots
     if os.path.exists(args.path_plots):
         shutil.rmtree(args.path_plots)
     os.makedirs(args.path_plots, exist_ok=True)
 
     plot_roc(
-        args.path_model, 
-        args.path_cube_validation, 
-        args.path_plots, 
-        threshold=args.threshold)
+        args.path_model,
+        args.path_cube_validation,
+        args.path_plots,
+        threshold=args.threshold,
+    )
 
     plot_recall(
-        args.path_model, 
-        args.path_cube_validation, 
-        args.path_plots, 
-        threshold=args.threshold)
+        args.path_model,
+        args.path_cube_validation,
+        args.path_plots,
+        threshold=args.threshold,
+    )
 
-    plot_prob_distribution(
-        args.path_model, 
-        args.path_cube_validation, 
-        args.path_plots)
-
-    
+    plot_prob_distribution(args.path_model, args.path_cube_validation, args.path_plots)
 
 
 if __name__ == "__main__":

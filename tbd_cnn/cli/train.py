@@ -59,8 +59,7 @@ def main():
         required=False,
         type=float,
         default=0.15,
-        help="Fraction of the data used for the validation sample. "
-             "(Default: 0.15)",
+        help="Fraction of the data used for the validation sample. " "(Default: 0.15)",
     )
 
     parser.add_argument(
@@ -69,8 +68,7 @@ def main():
         required=False,
         type=float,
         default=0.3,
-        help="Fraction used for each dropout. "
-             "(Default: 0.3)",
+        help="Fraction used for each dropout. " "(Default: 0.3)",
     )
 
     parser.add_argument(
@@ -79,14 +77,19 @@ def main():
         required=False,
         type=float,
         default=0.53,
-        help="Threshold used for diagnostics. "
-             "(Default: 0.53)",
+        help="Threshold used for diagnostics. " "(Default: 0.53)",
     )
 
-
     args = parser.parse_args()
-    train(args.path_cubename, args.path_model, args.modelname,
-          args.epochs, frac=args.frac, dropout=args.dropout, threshold=args.threshold)
+    train(
+        args.path_cubename,
+        args.path_model,
+        args.modelname,
+        args.epochs,
+        frac=args.frac,
+        dropout=args.dropout,
+        threshold=args.threshold,
+    )
 
 
 if __name__ == "__main__":

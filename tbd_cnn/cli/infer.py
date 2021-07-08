@@ -25,7 +25,7 @@ def main():
         dest="path_cutouts",
         required=True,
         type=str,
-        help="Path to cutouts."
+        help="Path to cutouts.",
     )
 
     parser.add_argument(

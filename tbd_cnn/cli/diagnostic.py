@@ -9,7 +9,7 @@ Author: David Corre, IAP, corre@iap.fr
 import argparse
 import warnings
 
-from tbd_cnn.diagnostics import (print_diagnostics, get_diagnostics, generate_cutouts)
+from tbd_cnn.diagnostics import print_diagnostics, get_diagnostics, generate_cutouts
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
 
@@ -36,15 +36,13 @@ def main():
         help="Path where to the pretrained model, including it's name and extension",
     )
 
-
     parser.add_argument(
         "--threshold",
         dest="threshold",
         required=False,
         type=float,
         default=0.5,
-        help="The threshold to define classes True and False"
-        "(Default: 0.5)",
+        help="The threshold to define classes True and False" "(Default: 0.5)",
     )
 
     parser.add_argument(
@@ -62,14 +60,15 @@ def main():
         args.path_cube_validation,
         threshold=args.threshold,
     )
-    
+
     print_diagnostics(diags)
-    
+
     generate_cutouts(
         args.path_model,
         args.path_cube_validation,
         args.path_diagnostics,
-        threshold=args.threshold,)
+        threshold=args.threshold,
+    )
 
 
 if __name__ == "__main__":

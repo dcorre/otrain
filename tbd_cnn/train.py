@@ -92,7 +92,14 @@ def build_model(ima, nclass, dropout=0.3):
 
 
 def train(
-    path_cube, path_model, modelname, epochs, frac=0.15, dropout=0.3, threshold=0.53, condition=None
+    path_cube,
+    path_model,
+    modelname,
+    epochs,
+    frac=0.15,
+    dropout=0.3,
+    threshold=0.53,
+    condition=None,
 ):
     """Train CNN with simulated data"""
 
@@ -127,7 +134,7 @@ def train(
     else:
         size = condition[0]
         randomize = condition[1]
-    
+
     # Number of data used for the validation test
     nt = int(size * frac)
 
@@ -256,6 +263,5 @@ def train(
         plot_prob_distribution(model_name, path_cube_test, path_model)
         print_diagnostics(diags)
         generate_cutouts(model_name, path_cube_test, path_model, 0.53)
-
 
     return history, diags

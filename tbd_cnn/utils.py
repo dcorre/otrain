@@ -431,4 +431,3 @@ def get_corner_coords(filename):
     ra, dec = w.all_pix2world(pix_coords[0], pix_coords[1], 1)
 
     return [ra, dec]
-

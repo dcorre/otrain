@@ -88,7 +88,7 @@ def main():
         args.epochs,
         n_sections=args.frac,
         dropout=args.dropout,
-        outdir=args.outdir
+        outdir=args.outdir,
     )
 
 

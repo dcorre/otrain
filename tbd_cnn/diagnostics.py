@@ -63,7 +63,7 @@ def get_diagnostics(path_model, path_cube_test, threshold=0.5):
 
 
 def print_diagnostics(diags):
-    print ("\n")
+    print("\n")
     print(f"average accuracy score: {diags[0]}")
     print("Precision: %1.3f" % diags[1])
     print("Recall: %1.3f" % diags[2])
@@ -71,10 +71,12 @@ def print_diagnostics(diags):
     print("MCC score: %1.3f" % diags[5])
     print("Confusion matrix:")
     print(diags[4])
-    print ("\n")
+    print("\n")
 
 
-def generate_cutouts(path_model, path_cube_test, dest_path, threshold=0.5, nb_samples=30):
+def generate_cutouts(
+    path_model, path_cube_test, dest_path, threshold=0.5, nb_samples=30
+):
 
     labp, labt, imat, magt, errmagt, candidt = get_results(path_model, path_cube_test)
     y_pred = [int(x[1] > threshold) for i, x in enumerate(labp)]

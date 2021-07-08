@@ -21,7 +21,7 @@ from math import floor
 def convert(path_datacube, cubename, path_cutouts, frac_true):
     """Convert simulated data before starting training"""
 
-    #outdir = os.path.join(path_datacube, "datacube")
+    # outdir = os.path.join(path_datacube, "datacube")
     outdir = path_datacube
     mkdir_p(outdir)
 
