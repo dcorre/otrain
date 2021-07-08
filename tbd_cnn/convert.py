@@ -21,7 +21,8 @@ from math import floor
 def convert(path_datacube, cubename, path_cutouts, frac_true):
     """Convert simulated data before starting training"""
 
-    outdir = os.path.join(path_datacube, "datacube")
+    #outdir = os.path.join(path_datacube, "datacube")
+    outdir = path_datacube
     mkdir_p(outdir)
 
     # Get all the prefixes corresponding to one field
@@ -32,11 +33,11 @@ def convert(path_datacube, cubename, path_cutouts, frac_true):
     Ncand_true = len(truelist)
     Ncand_false = len(falselist)
     if Ncand_true > Ncand_false:
-        Ncand_true_max = floor(2*Ncand_false*frac_true)
-        Ncand_false_max = floor(2*Ncand_false*(1-frac_true))
+        Ncand_true_max = floor(2 * Ncand_false * frac_true)
+        Ncand_false_max = floor(2 * Ncand_false * (1 - frac_true))
     elif Ncand_true <= Ncand_false:
-        Ncand_true_max = floor(2*Ncand_true*frac_true)
-        Ncand_false_max = floor(2*Ncand_true*(1-frac_true))
+        Ncand_true_max = floor(2 * Ncand_true * frac_true)
+        Ncand_false_max = floor(2 * Ncand_true * (1 - frac_true))
 
     Ncand_tot = len(truelist) + len(falselist)
     Ncand = Ncand_true_max + Ncand_false_max
@@ -64,7 +65,7 @@ def convert(path_datacube, cubename, path_cutouts, frac_true):
             hdus.close()
         else:
             break
-        counter_true = counter_true+1
+        counter_true = counter_true + 1
 
     counter_false = 0
     for cand in falselist:
@@ -87,14 +88,16 @@ def convert(path_datacube, cubename, path_cutouts, frac_true):
             hdus.close()
         else:
             break
-        counter_false = counter_false+1
+        counter_false = counter_false + 1
 
-    print("The datacube contains",
-          str(Ncand),
-          "candidates with Ntrue =",
-          str(counter_true),
-          "and Nfalse =",
-          str(counter_false))
+    print(
+        "The datacube contains",
+        str(Ncand),
+        "candidates with Ntrue =",
+        str(counter_true),
+        "and Nfalse =",
+        str(counter_false),
+    )
     print("Converting and reshaping arrays ...")
     # Convert lists to B.I.P. NumPy arrays
     # Check whether all candidates has 64x64 pixels
@@ -106,15 +109,12 @@ def convert(path_datacube, cubename, path_cutouts, frac_true):
     #        del cube[i]
     cube = np.asarray(cube, dtype=np.float32)
     if cube.ndim < 4:
-        cube = np.reshape(
-            cube, [
-                cube.shape[0], cube.shape[1], cube.shape[2], 1])
+        cube = np.reshape(cube, [cube.shape[0], cube.shape[1], cube.shape[2], 1])
     else:
         cube = np.moveaxis(cube, 1, -1)
 
     # Report dimensions of the data cube
-    print("Saving %d %d×%d×%d image datacube ..." %
-          cube.shape, end="\r", flush=True)
+    print("Saving %d %d×%d×%d image datacube ..." % cube.shape, end="\r", flush=True)
     np.savez(
         os.path.join(outdir, npz_name),
         cube=cube,
@@ -122,7 +122,7 @@ def convert(path_datacube, cubename, path_cutouts, frac_true):
         mags=mags,
         errmags=errmags,
         filters=filters,
-        candids=cand_ids
+        candids=cand_ids,
     )
 
     print("Saved to " + os.path.join(outdir, npz_name))
