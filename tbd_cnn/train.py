@@ -91,7 +91,9 @@ def build_model(ima, nclass, dropout=0.3):
     return model
 
 
-def train(path_cube, path_model, modelname, epochs, condition = None, frac=0.1, dropout=0.3):
+def train(
+    path_cube, path_model, modelname, epochs, frac=0.15, dropout=0.3, threshold=0.53, condition=None
+):
     """Train CNN with simulated data"""
 
     # condition: is the training executed in the size optimisation loop or not
@@ -99,11 +101,8 @@ def train(path_cube, path_model, modelname, epochs, condition = None, frac=0.1, 
     # condition = [size,randomize]
 
     gpus = -1
-    path_model = os.path.join(path_model, "CNN_training/")
+    path_model = os.path.join(path_model, "CNN_training", modelname)
     mkdir_p(path_model)
-
-    # Fraction of data used for the validation test
-    fract = frac
 
     # number of epochs
     epochs = epochs
@@ -117,7 +116,7 @@ def train(path_cube, path_model, modelname, epochs, condition = None, frac=0.1, 
     mag = data["mags"]
     errmag = data["errmags"]
     band = data["filters"]
-    candids=data["candids"]
+    candids = data["candids"]
     nclass = lab.shape[1]
     n = ima.shape[0]
 
@@ -128,7 +127,9 @@ def train(path_cube, path_model, modelname, epochs, condition = None, frac=0.1, 
     else:
         size = condition[0]
         randomize = condition[1]
-    nt = int(size * fract)
+    
+    # Number of data used for the validation test
+    nt = int(size * frac)
 
     print("Shuffling data ...", end="\r", flush=True)
     ima = ima[randomize]
@@ -136,7 +137,7 @@ def train(path_cube, path_model, modelname, epochs, condition = None, frac=0.1, 
     mag = mag[randomize]
     errmag = errmag[randomize]
     band = band[randomize]
-    candid=candids[randomize]
+    candid = candids[randomize]
     nclass = lab.shape[1]
 
     print("Splitting dataset ...", end="\r", flush=True)
@@ -145,29 +146,33 @@ def train(path_cube, path_model, modelname, epochs, condition = None, frac=0.1, 
     magl = mag[nt:size]
     errmagl = errmag[nt:size]
     bandl = band[nt:size]
-    candidl=candid[nt:size]
+    candidl = candid[nt:size]
 
     imat = ima[:nt]
     labt = lab[:nt]
     magt = mag[:nt]
     errmagt = errmag[:nt]
     bandt = band[:nt]
-    candidt=candid[:nt]
+    candidt = candid[:nt]
 
-    outdir = os.path.join("validation", "datacube_test")
+    # save datacube with data used for validation
+    # useful for diagnostics
+    outdir = os.path.join(path_model, "validation_set", "datacube")
     mkdir_p(outdir)
-    npz_name = "cube_val.npz"
+    npz_name = "cube_validation.npz"
     path_cube_test = os.path.join(outdir, npz_name)
     np.savez(
         path_cube_test,
-        cube = imat,
-        labels = labt,
-        mags = magt,
-        errmags = errmagt,
-        candids = candidt,
+        cube=imat,
+        labels=labt,
+        mags=magt,
+        errmags=errmagt,
+        candids=candidt,
     )
 
+    # Build CNN model
     model = build_model(ima, nclass, dropout)
+
     if gpus > 0:
         parallel_model = multi_gpu_model(model, gpus=gpus)
 
@@ -193,7 +198,6 @@ def train(path_cube, path_model, modelname, epochs, condition = None, frac=0.1, 
         labp = parallel_model.predict(imat)
 
     else:
-
         model.compile(
             loss="categorical_crossentropy",
             optimizer=keras.optimizers.Adam(lr=0.001),
@@ -221,10 +225,12 @@ def train(path_cube, path_model, modelname, epochs, condition = None, frac=0.1, 
         score = model.evaluate(imat, labt, verbose=0)
         labp = model.predict(imat)
 
+    # Save trained model in hdf5 format
     model.save(model_name)
 
+    # Run some diagnostics on the training
+    diags = get_diagnostics(model_name, path_cube_test, threshold)
 
-    diags = get_diagnostics(model_name, path_cube_test, 0.53)
     # if this training is not run within the size_optimize loop, we can plot the following figures
     if condition is None:
         _, axis = plt.subplots()
@@ -250,8 +256,6 @@ def train(path_cube, path_model, modelname, epochs, condition = None, frac=0.1, 
         plot_prob_distribution(model_name, path_cube_test, path_model)
         print_diagnostics(diags)
         generate_cutouts(model_name, path_cube_test, path_model, 0.53)
-        
-    else:
-        ()
+
 
     return history, diags
