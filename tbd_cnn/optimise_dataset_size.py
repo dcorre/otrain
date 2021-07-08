@@ -54,7 +54,7 @@ def optimise_dataset_size(
             path_model,
             modelname_iteration,
             epochs,
-            condition=[size, randomize],
+            dataset_size=[size, randomize],
         )
 
         mcc.append(scores[5])
