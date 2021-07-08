@@ -95,11 +95,12 @@ def train(
     path_cube,
     path_model,
     modelname,
-    epochs,
+    epochs=10,
     frac=0.15,
     dropout=0.3,
     threshold=0.53,
     dataset_size=None,
+    nb_gpus=-1
 ):
     """Train CNN with simulated data"""
 
@@ -107,12 +108,9 @@ def train(
     # dataset_size = None if not
     # dataset_size = [size, randomize]
 
-    gpus = -1
     path_model = os.path.join(path_model, "CNN_training", modelname)
     mkdir_p(path_model)
 
-    # number of epochs
-    epochs = epochs
     # outputname for the trained model
     model_name = os.path.join(path_model, "%s.h5" % modelname)
 
@@ -181,8 +179,9 @@ def train(
     # Build CNN model
     model = build_model(ima, nclass, dropout)
 
-    if gpus > 0:
-        parallel_model = multi_gpu_model(model, gpus=gpus)
+    # If GPUs are used
+    if nb_gpus > 0:
+        parallel_model = multi_gpu_model(model, gpus=nb_gpus)
 
         parallel_model.compile(
             loss="categorical_crossentropy",
@@ -205,6 +204,7 @@ def train(
         # parallel_model.save(model_name)
         labp = parallel_model.predict(imat)
 
+    # If no GPU is used
     else:
         model.compile(
             loss="categorical_crossentropy",
