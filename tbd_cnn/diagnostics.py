@@ -63,22 +63,25 @@ def get_diagnostics(path_model, path_cube_test, threshold=0.5):
 
 
 def print_diagnostics(diags):
+    print ("\n")
     print(f"average accuracy score: {diags[0]}")
-    print("\tPrecision: %1.3f" % diags[1])
-    print("\tRecall: %1.3f" % diags[2])
-    print("\tF1 score: %1.3f" % diags[3])
-    print("\tMCC score: %1.3f" % diags[5])
-    print(f"\tConfusion matrix: {diags[4]}")
+    print("Precision: %1.3f" % diags[1])
+    print("Recall: %1.3f" % diags[2])
+    print("F1 score: %1.3f" % diags[3])
+    print("MCC score: %1.3f" % diags[5])
+    print("Confusion matrix:")
+    print(diags[4])
+    print ("\n")
 
 
-def generate_cutouts(path_model, path_cube_test, dest_path, threshold=0.5):
+def generate_cutouts(path_model, path_cube_test, dest_path, threshold=0.5, nb_samples=30):
 
     labp, labt, imat, magt, errmagt, candidt = get_results(path_model, path_cube_test)
     y_pred = [int(x[1] > threshold) for i, x in enumerate(labp)]
     y_pred = np.asarray(y_pred)
     y_valid = np.argmax(labt, axis=1)
 
-    folder_f = os.path.join(dest_path, "Misclassified")
+    folder_f = os.path.join(dest_path, "validation_set", "misclassified")
     outdirfp = os.path.join(folder_f, "images_FP")
     create_folder(outdirfp)
 
@@ -86,7 +89,7 @@ def generate_cutouts(path_model, path_cube_test, dest_path, threshold=0.5):
     create_folder(outdirfn)
 
     list_f = y_valid != y_pred
-    indices_f = [i for i, x in enumerate(list_f) if x ]
+    indices_f = [i for i, x in enumerate(list_f) if x]
     images_f = np.zeros((len(indices_f), imat.shape[1], imat.shape[1], imat.shape[3]))
     for i, index in enumerate(indices_f):
         images_f[i] = imat[index]
@@ -116,8 +119,7 @@ def generate_cutouts(path_model, path_cube_test, dest_path, threshold=0.5):
             )
 
     # Creating cutouts of 30 randomly chosen well classified candidates
-    folder = os.path.join(dest_path, "Well classified")
-
+    folder = os.path.join(dest_path, "validation_set", "well_classified")
     outdirtp = os.path.join(folder, "images_TP")
     create_folder(outdirtp)
 
@@ -126,18 +128,20 @@ def generate_cutouts(path_model, path_cube_test, dest_path, threshold=0.5):
 
     list_tp = (y_valid == 1) & (y_pred == 1)
     list_tn = (y_valid == 0) & (y_pred == 0)
-    indices_tp = [i for i, x in enumerate(list_tp) if x ]
-    indices_tn = [i for i, x in enumerate(list_tn) if x ]
+    indices_tp = [i for i, x in enumerate(list_tp) if x]
+    indices_tn = [i for i, x in enumerate(list_tn) if x]
 
-    rand_tp = random.sample(range(0, len(indices_tp)), 30)
-    rand_tn = random.sample(range(0, len(indices_tn)), 30)
+    nb_samples_tp = min(nb_samples, len(indices_tp))
+    nb_samples_tn = min(nb_samples, len(indices_tn))
+    rand_tp = random.sample(range(0, len(indices_tp)), nb_samples_tp)
+    rand_tn = random.sample(range(0, len(indices_tn)), nb_samples_tn)
 
     # take 30 random images of True candidates
-    images_tp = np.zeros((30, imat.shape[1], imat.shape[1], imat.shape[3]))
+    images_tp = np.zeros((nb_samples_tp, imat.shape[1], imat.shape[1], imat.shape[3]))
     for i, index in enumerate(rand_tp):
         images_tp[i] = imat[indices_tp[index]]
 
-    print("generating 30 cutouts of well classified True candidates")
+    print(f"generating {nb_samples_tp} cutouts of well classified True candidates")
 
     for i, dat in enumerate(images_tp):
         outname = os.path.join(outdirtp, f"cutout_{i}.png")
@@ -152,11 +156,11 @@ def generate_cutouts(path_model, path_cube_test, dest_path, threshold=0.5):
         )
 
     # take the 30 images of False candidates
-    images_tn = np.zeros((30, imat.shape[1], imat.shape[1], imat.shape[3]))
+    images_tn = np.zeros((nb_samples_tn, imat.shape[1], imat.shape[1], imat.shape[3]))
     for i, index in enumerate(rand_tn):
         images_tn[i] = imat[indices_tn[index]]
 
-    print("generating 30 cutouts of well classified False candidates")
+    print(f"generating {nb_samples_tn} cutouts of well classified False candidates")
 
     for i, dat in enumerate(images_tn):
         outname = os.path.join(outdirtn, f"cutout_{i}.png")
