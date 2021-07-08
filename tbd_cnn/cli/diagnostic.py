@@ -21,11 +21,11 @@ def main():
     )
 
     parser.add_argument(
-        "--cube-test",
-        dest="path_cubetest",
+        "--path-cube-validation",
+        dest="path_cube_validation",
         required=True,
         type=str,
-        help="Path to the test datacube, including its name and extension.",
+        help="Path to the datacube containing data used as validation set, including its name and extension.",
     )
 
     parser.add_argument(
@@ -48,8 +48,8 @@ def main():
     )
 
     parser.add_argument(
-        "--path-folders",
-        dest="dest_path",
+        "--path-diagnostics",
+        dest="path_diagnostics",
         required=False,
         type=str,
         default="cnn_results",
@@ -59,7 +59,7 @@ def main():
     args = parser.parse_args()
     diags = get_diagnostics(
         args.path_model,
-        args.path_cubetest,
+        args.path_cube_validation,
         threshold=args.threshold,
     )
     
@@ -67,8 +67,8 @@ def main():
     
     generate_cutouts(
         args.path_model,
-        args.path_cubetest,
-        args.dest_path,
+        args.path_cube_validation,
+        args.path_diagnostics,
         threshold=args.threshold,)
 
 

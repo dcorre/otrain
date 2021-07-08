@@ -19,11 +19,11 @@ def main():
     )
 
     parser.add_argument(
-        "--cube-test",
-        dest="path_cubetest",
+        "--path-cube-validation",
+        dest="path_cube_validation",
         required=True,
         type=str,
-        help="Path to the test datacube, including its name and extension.",
+        help="Path to the datacube containing data used as validation set, including its name and extension.",
     )
 
     parser.add_argument(
@@ -62,19 +62,19 @@ def main():
 
     plot_roc(
         args.path_model, 
-        args.path_cubetest, 
+        args.path_cube_validation, 
         args.path_plots, 
         threshold=args.threshold)
 
     plot_recall(
         args.path_model, 
-        args.path_cubetest, 
+        args.path_cube_validation, 
         args.path_plots, 
         threshold=args.threshold)
 
     plot_prob_distribution(
         args.path_model, 
-        args.path_cubetest, 
+        args.path_cube_validation, 
         args.path_plots)
 
     

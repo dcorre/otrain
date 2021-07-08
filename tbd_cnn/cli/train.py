@@ -73,9 +73,20 @@ def main():
              "(Default: 0.3)",
     )
 
+    parser.add_argument(
+        "--threshold",
+        dest="threshold",
+        required=False,
+        type=float,
+        default=0.53,
+        help="Threshold used for diagnostics. "
+             "(Default: 0.53)",
+    )
+
+
     args = parser.parse_args()
     train(args.path_cubename, args.path_model, args.modelname,
-          args.epochs, frac=args.frac, dropout=args.dropout)
+          args.epochs, frac=args.frac, dropout=args.dropout, threshold=args.threshold)
 
 
 if __name__ == "__main__":
