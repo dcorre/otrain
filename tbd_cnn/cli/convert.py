@@ -45,7 +45,7 @@ def main():
     )
 
     parser.add_argument(
-        "--frac_true",
+        "--frac-true",
         dest="frac_true",
         required=False,
         default=0.5,
