@@ -100,7 +100,7 @@ def train(
     dropout=0.3,
     threshold=0.53,
     dataset_size=None,
-    nb_gpus=-1
+    nb_gpus=-1,
 ):
     """Train CNN with simulated data"""
 
