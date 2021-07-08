@@ -99,13 +99,13 @@ def train(
     frac=0.15,
     dropout=0.3,
     threshold=0.53,
-    condition=None,
+    dataset_size=None,
 ):
     """Train CNN with simulated data"""
 
-    # condition: is the training executed in the size optimisation loop or not
-    # condition = None if not
-    # condition = [size,randomize]
+    # dataset_size: is the training executed in the size optimisation loop or not
+    # dataset_size = None if not
+    # dataset_size = [size, randomize]
 
     gpus = -1
     path_model = os.path.join(path_model, "CNN_training", modelname)
@@ -127,13 +127,14 @@ def train(
     nclass = lab.shape[1]
     n = ima.shape[0]
 
-    if condition is None:
+    if dataset_size is None:
         size = n
         randomize = np.arange(n)
         np.random.shuffle(randomize)
     else:
-        size = condition[0]
-        randomize = condition[1]
+        assert len(dataset_size) == 2
+        size = dataset_size[0]
+        randomize = dataset_size[1]
 
     # Number of data used for the validation test
     nt = int(size * frac)
@@ -239,7 +240,7 @@ def train(
     diags = get_diagnostics(model_name, path_cube_test, threshold)
 
     # if this training is not run within the size_optimize loop, we can plot the following figures
-    if condition is None:
+    if dataset_size is None:
         _, axis = plt.subplots()
         axis.set_xlabel("epoch")
         axis.set_ylabel("loss")
