@@ -31,18 +31,18 @@ def get_results(path_model, path_cube_test):
     return magt, labp, labt
 
 
-def plot_recall(path_model, path_cube_test, path_plot, threshold=0.53):
+def plot_recall(path_model, path_cube_test, path_plot, threshold=0.53, mag_max=25):
     """saves precision-recall plot"""
     magt, labp, labt = get_results(path_model, path_cube_test)
     y_valid = np.argmax(labt, axis=1)
-    _, axis = plt.subplots()
-    axis.set_xlabel("recall")
-    axis.set_ylabel("precision")
+    plt.figure()
+    plt.xlabel("recall")
+    plt.ylabel("precision")
     mag_min = np.min(magt[magt != 99])
 
     # plot the precision-recall curve of each magnitude interval [lim_min,lim]
     lim_min = 0
-    for lim in np.linspace(mag_min, 25, 6):
+    for lim in np.linspace(mag_min, mag_max, 6):
         labpm = labp[(lim_min <= magt) & (magt <= lim)]
         labtm = y_valid[(lim_min <= magt) & (magt <= lim)]
         if labtm != []:
@@ -60,23 +60,24 @@ def plot_recall(path_model, path_cube_test, path_plot, threshold=0.53):
             )
             # plt.scatter(recall[x], precision[x], marker='o', color='black', label='Best = %f' % thresholds[x])
         lim_min = lim
-    legend = axis.legend(loc="lower left")
+    plt.legend(loc="lower left")
+    plt.tight_layout()
     plt.savefig(os.path.join(path_plot, "recall.png"))
 
 
-def plot_roc(path_model, path_cube_test, path_plot, threshold=0.53):
+def plot_roc(path_model, path_cube_test, path_plot, threshold=0.53, mag_max=25):
     """plot ROC curve and save figure"""
     magt, labp, labt = get_results(path_model, path_cube_test)
     y_valid = np.argmax(labt, axis=1)
 
-    _, axis = plt.subplots()
-    axis.set_xlabel("FPR")
-    axis.set_ylabel("TPR")
+    plt.figure()
+    plt.xlabel("FPR")
+    plt.ylabel("TPR")
     mag_min = np.min(magt[magt != 99])
 
     # plot the roc curve of each magnitude interval [lim_min,lim]
     lim_min = 0
-    for lim in np.linspace(mag_min, 25, 6):
+    for lim in np.linspace(mag_min, mag_max, 6):
         labpm = labp[(lim_min <= magt) & (magt <= lim)]
         labtm = y_valid[(lim_min <= magt) & (magt <= lim)]
         if labtm != []:
@@ -92,7 +93,8 @@ def plot_roc(path_model, path_cube_test, path_plot, threshold=0.53):
             plt.plot(fpr, tpr, label="{0:.2f} < mag < {1:.2f}".format(lim_min, lim))
             # plt.scatter(fpr[ix], tpr[ix], marker='o', color='black', label='Best = %f' % thresholds[ix])
         lim_min = lim
-    legend = axis.legend(loc="lower left")
+    plt.legend(loc="lower left")
+    plt.tight_layout()
     plt.savefig(os.path.join(path_plot, "ROC.png"))
 
 
@@ -100,7 +102,15 @@ def plot_prob_distribution(path_model, path_cube_test, path_plot):
     """plot probability distribution"""
     _, labp, _ = get_results(path_model, path_cube_test)
 
-    plt.hist(labp, bins=15)
-    plt.gca().set(title="Probability distribution", ylabel="Frequency")
-    plt.legend(["False", "True"], loc="upper center")
+    labels = ["False", "True"]
+    # Even linear bin steps
+    bins = np.linspace(0, 1, 15)
+    plt.figure()
+    for i in range(labp.shape[1]):
+        plt.hist(labp[:, i], bins=bins, label=labels[i], alpha=0.5)
+    plt.title("Probability distribution")
+    plt.ylabel("Frequency")
+    plt.xlabel("proba")
+    plt.legend(loc="upper center")
+    plt.tight_layout()
     plt.savefig(os.path.join(path_plot, "prob_distribution.png"))
