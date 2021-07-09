@@ -9,7 +9,7 @@ Author: David Corre, IAP, corre@iap.fr
 import argparse
 import warnings
 
-from tbd_cnn.train import train
+from otrainee.train import train
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
 

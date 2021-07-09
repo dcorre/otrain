@@ -71,12 +71,12 @@ def mkdir_p(path):
 
 
 def getpath():
-    """Get the path to tbd_cnn module"""
+    """Get the path to otrainee module"""
     try:
-        findspec = importlib.util.find_spec("tbd_cnn")
+        findspec = importlib.util.find_spec("otrainee")
         path = findspec.submodule_search_locations[0]
     except BaseException:
-        print("path to tbd_cnn can not be found.")
+        print("path to otrainee can not be found.")
 
     return path
 

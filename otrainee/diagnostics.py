@@ -18,7 +18,7 @@ from sklearn.metrics import (
     confusion_matrix,
     matthews_corrcoef,
 )
-from tbd_cnn.utils import make_figure
+from otrainee.utils import make_figure
 
 
 def create_folder(path):

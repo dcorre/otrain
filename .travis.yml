@@ -10,7 +10,7 @@ services:
   - docker
 
 before_install:
-  #- git pull dcorre/gmadet:travis
+  #- git pull dcorre/otrainee:travis
   - echo "Noting"
 
 script:

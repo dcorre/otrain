@@ -9,7 +9,7 @@ Author: David Corre, IAP, corre@iap.fr
 import argparse
 import warnings
 
-from tbd_cnn.convert import convert
+from otrainee.convert import convert
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
 
