@@ -11,9 +11,6 @@ The image substraction results in many false candidates due to bad astrometric c
 
 These artefacts are usually easy to discard by eye, but it is time consuming and obviously not possible in an automatic process. So one soluton is to make use of machine learning to filter these false candidates, using for instance a CNN algorithm.
 
-To do that, we can run the pipeline on real images of a given telescope and classify by eye the true and false candidates. It means that we need to identify real transients or variable object in the images, which can be time consuming.
-
-We can also simulate point like objects in these astronomical images and run the pipeline on these images knowing exactly where these simulated transients are. To do that we estimate the PSF on each image, and use it to simulate some point like sources in these images. Then the pipeline is ran and the simulated transients are automatically classified as true candidates, the user can either examine by eye the rest of the candidates to determine whether they are true or false candidates or consider all of them as false candidates (not the best but if the number of simulated sources is large enough it can be a good comprise). Then this set of true and false candidates are provided to the CNN algorithm to learn to classify candidates. Once the CNN training model is satisfactory, it can be used in the pipeline process to filter the candidates resulting of image substraction.
 
 
 Process

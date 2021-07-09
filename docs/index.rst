@@ -7,8 +7,8 @@ Welcome to O'TRAINEE's documentation!
 
    installation
    information
+   global_description
    examples
-   machine_learning
    outputs
    modules
    contributing

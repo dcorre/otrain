@@ -19,3 +19,5 @@ Replace:
 
 Then you only need to prepend `docker exec otrainee` to the commands given below to execute them within the container instead of your machine.
 
+
+TO DO
