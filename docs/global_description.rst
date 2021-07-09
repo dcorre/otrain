@@ -1,6 +1,6 @@
-=====================================
-Machine learning to filter candidates
-=====================================
+===========================
+Global description of usage
+===========================
 
 
 Objective
@@ -17,7 +17,7 @@ Process
 -------
 
 Launch the Doker image
-^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^
 
 
 

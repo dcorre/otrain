@@ -34,7 +34,7 @@ Important information
 ---------------------
 
 Cutouts header
-^^^^^^^^^^^^
+^^^^^^^^^^^^^^
 
 The following keywords are mandatory in the cutouts header used for the training and inference:
 * CAND_ID

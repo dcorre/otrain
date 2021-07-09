@@ -3,7 +3,7 @@ Examples
 ========
 
 Launch the Doker image
--------------------
+----------------------
 
 If you are using the Docker image, remember to launch once the container:
 

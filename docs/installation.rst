@@ -71,7 +71,7 @@ You can test that Docker is installed correctly and can be run without sudo:
 
 
 Download the otrainee Docker image
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 To retrieve the Docker image:
 
@@ -96,7 +96,7 @@ Install conda: https://docs.conda.io/en/latest/miniconda.html
 You can also install everything with pip if you prefer not to use conda.
 
 Python 3 environment:
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: console
 
@@ -121,11 +121,15 @@ Once you have activated the environment, install the packages that are not avail
     python3 -m pip install keras tensorflow opencv-python-headless
 
 
+.. _Github repo: https://github.com/dcorre/otrainee
+.. _tarball: https://github.com/dcorre/otrainee/tarball/master
+
+
 Testing that it is working
 --------------------------
 
 Run Docker
-^^^^^^^^^^^^^^
+^^^^^^^^^^
 
 Run the Docker image in the background:
 
@@ -166,10 +170,10 @@ You can list the containers, active or not, on your machine with:
 
 
 Install otrainee
-^^^^^^^^^^^^^^
--------------------------
+^^^^^^^^^^^^^^^^
+-----------------------
 Inside the Docker image
--------------------------
+-----------------------
 
 Already installed.
 
@@ -184,7 +188,7 @@ Without Docker image
 
 
 Run otrainee on a test image
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 To test if otrainee is running normally:
 

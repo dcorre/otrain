@@ -10,7 +10,6 @@ Welcome to O'TRAINEE's documentation!
    global_description
    examples
    outputs
-   modules
    contributing
    authors
    history
