@@ -9,7 +9,7 @@ Author: David Corre, IAP, corre@iap.fr
 import argparse
 import warnings
 
-from tbd_cnn.train import train
+from tbd_cnn.optimise_dataset_size import optimise_dataset_size
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
 
@@ -17,7 +17,7 @@ warnings.simplefilter(action="ignore", category=FutureWarning)
 def main():
 
     parser = argparse.ArgumentParser(
-        description="Train the CNN using the given datacube."
+        description="Train the CNN on different dataset sizes"
     )
 
     parser.add_argument(
@@ -54,12 +54,13 @@ def main():
     )
 
     parser.add_argument(
-        "--frac",
+        "--n_sections",
         dest="frac",
         required=False,
-        type=float,
-        default=0.15,
-        help="Fraction of the data used for the validation sample. " "(Default: 0.15)",
+        type=int,
+        default=20,
+        help="The number of sections we want to divide the dataset into."
+        "(Default: 20)",
     )
 
     parser.add_argument(
@@ -72,23 +73,22 @@ def main():
     )
 
     parser.add_argument(
-        "--threshold",
-        dest="threshold",
-        required=False,
-        type=float,
-        default=0.53,
-        help="Threshold used for diagnostics. " "(Default: 0.53)",
+        "--outdir",
+        dest="outdir",
+        required=True,
+        type=str,
+        help="Path where to store the results.",
     )
 
     args = parser.parse_args()
-    train(
+    optimise_dataset_size(
         args.path_cubename,
         args.path_model,
         args.modelname,
         args.epochs,
-        frac=args.frac,
+        n_sections=args.frac,
         dropout=args.dropout,
-        threshold=args.threshold,
+        outdir=args.outdir,
     )
 
 

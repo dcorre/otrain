@@ -38,14 +38,13 @@ def infer(path_cutouts, path_model, probratio):
     model = keras.models.load_model(model_name)
     model.summary()
 
-
     cube = []
     newfilenames = []
     for ima in filenames:
         hdus = fits.open(ima, memmap=False)
         head = hdus[0].header
         # Discard cutout without the reauired size (on the image edges)
-        if head['edge'] == 'True':
+        if head["edge"] == "True":
             continue
         data = hdus[0].data
         cube.append(data)
@@ -55,9 +54,7 @@ def infer(path_cutouts, path_model, probratio):
     # Convert lists to B.I.P. NumPy arrays
     cube = np.asarray(cube, dtype=np.float32)
     if cube.ndim < 4:
-        cube = np.reshape(
-            cube, [
-                cube.shape[0], cube.shape[1], cube.shape[2], 1])
+        cube = np.reshape(cube, [cube.shape[0], cube.shape[1], cube.shape[2], 1])
     else:
         cube = np.moveaxis(cube, 1, -1)
 
@@ -123,6 +120,8 @@ def infer(path_cutouts, path_model, probratio):
             "label1",
         ],
     )
-    table.write(os.path.join(path_cutouts, "infer_results.dat"),
-                format="ascii.commented_header",
-                overwrite=True)
+    table.write(
+        os.path.join(path_cutouts, "infer_results.dat"),
+        format="ascii.commented_header",
+        overwrite=True,
+    )

@@ -25,7 +25,7 @@ def main():
         dest="path_datacube",
         required=True,
         type=str,
-        help="Path where to store the datacube."
+        help="Path where to store the datacube.",
     )
 
     parser.add_argument(
@@ -45,7 +45,7 @@ def main():
     )
 
     parser.add_argument(
-        "--frac_true",
+        "--frac-true",
         dest="frac_true",
         required=False,
         default=0.5,
@@ -54,9 +54,12 @@ def main():
     )
 
     args = parser.parse_args()
-    convert(args.path_datacube, cubename=args.cubename,
-            path_cutouts=args.path_cutouts,
-            frac_true=args.frac_true)
+    convert(
+        args.path_datacube,
+        cubename=args.cubename,
+        path_cutouts=args.path_cutouts,
+        frac_true=args.frac_true,
+    )
 
 
 if __name__ == "__main__":

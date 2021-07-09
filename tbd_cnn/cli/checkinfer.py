@@ -25,7 +25,7 @@ def main():
         dest="path_plots",
         required=True,
         type=str,
-        help="Path to folder where to store plots."
+        help="Path to folder where to store plots.",
     )
 
     parser.add_argument(
@@ -33,7 +33,7 @@ def main():
         dest="path_crossmatch",
         required=True,
         type=str,
-        help="Path to crossmatch.dat file."
+        help="Path to crossmatch.dat file.",
     )
 
     parser.add_argument(
@@ -41,7 +41,7 @@ def main():
         dest="path_infer",
         required=True,
         type=str,
-        help="Path to infer.dat file."
+        help="Path to infer.dat file.",
     )
 
     parser.add_argument(
@@ -50,10 +50,10 @@ def main():
         dest="maglim",
         required=False,
         type=float,
-        nargs='+',
+        nargs="+",
         default=[12, 18, 21],
         help="Magnitudes used to split the magnitude range in the plots. "
-             " (Default: 12 18 21)"
+        " (Default: 12 18 21)",
     )
 
     parser.add_argument(
@@ -61,10 +61,10 @@ def main():
         dest="CNNproblim",
         required=False,
         type=float,
-        nargs='+',
+        nargs="+",
         default=[0.1, 0.5, 0.7],
         help="CNN proba used to split the results in the plots. "
-             " (Default: 0.1 0.5 0.7)"
+        " (Default: 0.1 0.5 0.7)",
     )
 
     parser.add_argument(
@@ -74,7 +74,7 @@ def main():
         type=float,
         default=0.5,
         help="Lower bound for the ratio FWHM / FWHM_PSF used for the plots. "
-             " (Default: 0.5)"
+        " (Default: 0.5)",
     )
 
     parser.add_argument(
@@ -84,14 +84,19 @@ def main():
         type=float,
         default=4.2,
         help="Upper bound for the ratio FWHM / FWHM_PSF used for the plots. "
-             " (Default: 4.2)"
+        " (Default: 4.2)",
     )
 
     args = parser.parse_args()
-    makestats(args.path_plots, args.path_crossmatch, args.path_infer,
-              maglim=args.maglim, CNNproblim=args.CNNproblim,
-              FWHM_ratio_lower=args.FWHM_ratio_lower,
-              FWHM_ratio_upper=args.FWHM_ratio_upper)
+    makestats(
+        args.path_plots,
+        args.path_crossmatch,
+        args.path_infer,
+        maglim=args.maglim,
+        CNNproblim=args.CNNproblim,
+        FWHM_ratio_lower=args.FWHM_ratio_lower,
+        FWHM_ratio_upper=args.FWHM_ratio_upper,
+    )
 
 
 if __name__ == "__main__":
