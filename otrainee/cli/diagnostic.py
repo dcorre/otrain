@@ -9,7 +9,7 @@ Author: David Corre, IAP, corre@iap.fr
 import argparse
 import warnings
 
-from tbd_cnn.diagnostics import print_diagnostics, get_diagnostics, generate_cutouts
+from otrainee.diagnostics import print_diagnostics, get_diagnostics, generate_cutouts
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
 

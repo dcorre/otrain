@@ -40,10 +40,10 @@ import tensorflow as tf
 from tensorflow import keras
 import argparse
 from tensorflow.keras.utils import multi_gpu_model
-from tbd_cnn.utils import getpath, rm_p, mkdir_p
+from otrainee.utils import getpath, rm_p, mkdir_p
 
-from tbd_cnn.plot_results import plot_roc, plot_recall, plot_prob_distribution
-from tbd_cnn.diagnostics import get_diagnostics, generate_cutouts, print_diagnostics
+from otrainee.plot_results import plot_roc, plot_recall, plot_prob_distribution
+from otrainee.diagnostics import get_diagnostics, generate_cutouts, print_diagnostics
 
 
 def build_model(ima, nclass, dropout=0.3):

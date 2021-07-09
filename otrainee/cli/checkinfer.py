@@ -9,7 +9,7 @@ Author: David Corre, IAP, corre@iap.fr
 import argparse
 import warnings
 
-from tbd_cnn.checkinfer import makestats
+from otrainee.checkinfer import makestats
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
 

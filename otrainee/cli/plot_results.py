@@ -7,7 +7,7 @@ import warnings
 import os
 import shutil
 
-from tbd_cnn.plot_results import plot_roc, plot_recall, plot_prob_distribution
+from otrainee.plot_results import plot_roc, plot_recall, plot_prob_distribution
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
 
