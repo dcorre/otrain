@@ -72,7 +72,12 @@ def main():
         threshold=args.threshold,
     )
 
-    plot_prob_distribution(args.path_model, args.path_cube_validation, args.path_plots)
+    plot_prob_distribution(
+        args.path_model, 
+        args.path_cube_validation, 
+        args.path_plots,
+        threshold=args.threshold,
+    )
 
 
 if __name__ == "__main__":

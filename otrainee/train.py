@@ -261,7 +261,7 @@ def train(
 
         plot_roc(model_name, path_cube_test, path_model, 0.53)
         plot_recall(model_name, path_cube_test, path_model, 0.53)
-        plot_prob_distribution(model_name, path_cube_test, path_model)
+        plot_prob_distribution(model_name, path_cube_test, path_model, 0.53)
         print_diagnostics(diags)
         generate_cutouts(model_name, path_cube_test, path_model, 0.53)
 
