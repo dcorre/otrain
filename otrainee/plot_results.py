@@ -112,7 +112,7 @@ def recall(path_plot, valt, labp, y_valid, val_name, val_max):
 
 
 def plot_roc(
-    path_model, path_cube_test, path_plot, threshold=0.53, mag_max=25, errmag_max=0.4
+    path_model, path_cube_test, path_plot, mag_max=25, errmag_max=0.4
 ):
     """plot ROC curves and save figures"""
     errmagt, magt, labp, labt = get_results(path_model, path_cube_test)
@@ -125,7 +125,7 @@ def plot_roc(
 
 
 def plot_recall(
-    path_model, path_cube_test, path_plot, threshold=0.53, mag_max=25, errmag_max=0.4
+    path_model, path_cube_test, path_plot, mag_max=25, errmag_max=0.4
 ):
     """saves precision-recall plots"""
     errmagt, magt, labp, labt = get_results(path_model, path_cube_test)

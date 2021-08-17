@@ -27,7 +27,7 @@
 # 	along with Bertinoscopic. If not, see <http://www.gnu.org/licenses/>.
 #
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#    Original script modified by: David Corre (IJCLab/CNRS)
+#    Original script modified by: David Corre (IJCLab/CNRS), Kenza Makhlouf (ECL)
 
 import sys
 import os
@@ -56,35 +56,35 @@ def build_model(ima, nclass, dropout=0.3):
 
     model.add(
         keras.layers.Conv2D(
-            16, (3, 3), activation="elu", padding=padding, input_shape=ima.shape[1:]
+            16, (3, 3), activation="relu", padding=padding, input_shape=ima.shape[1:]
         )
     )
     model.add(
         keras.layers.Conv2D(
-            32, (3, 3), activation="elu", padding=padding, input_shape=ima.shape[1:]
+            32, (3, 3), activation="relu", padding=padding, input_shape=ima.shape[1:]
         )
     )
     # model.add(keras.layers.BatchNormalization())
     model.add(keras.layers.AveragePooling2D(pool_size=(2, 2)))
     # model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))
-    # model.add(keras.layers.Dropout(dprob[0]))
-    model.add(keras.layers.Conv2D(64, (3, 3), activation="elu", padding=padding))
+    model.add(keras.layers.Dropout(dprob[0]))
+    model.add(keras.layers.Conv2D(64, (3, 3), activation="relu", padding=padding))
     # model.add(keras.layers.BatchNormalization())
     model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))
     model.add(keras.layers.Dropout(dprob[1]))
-    model.add(keras.layers.Conv2D(128, (3, 3), activation="elu", padding=padding))
+    model.add(keras.layers.Conv2D(128, (3, 3), activation="relu", padding=padding))
     # model.add(keras.layers.BatchNormalization())
-    model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))
-    model.add(keras.layers.Dropout(dprob[1]))
-    model.add(keras.layers.Conv2D(256, (3, 3), activation="elu", padding=padding))
+    #model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))
+    #model.add(keras.layers.Dropout(dprob[1]))
+    model.add(keras.layers.Conv2D(256, (3, 3), activation="relu", padding=padding))
     # model.add(keras.layers.BatchNormalization())
     model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))
     # model.add(keras.layers.Dropout(dprob[2]))
     model.add(keras.layers.Flatten())
-    model.add(keras.layers.Dense(512, activation="elu"))
+    model.add(keras.layers.Dense(512, activation="relu"))
     # model.add(keras.layers.BatchNormalization())
     model.add(keras.layers.Dropout(dprob[2]))
-    model.add(keras.layers.Dense(256, activation="elu"))
+    model.add(keras.layers.Dense(256, activation="relu"))
     # model.add(keras.layers.BatchNormalization())
     # model.add(keras.layers.Dropout(0.3))
     model.add(keras.layers.Dense(nclass, activation="softmax"))
@@ -259,10 +259,10 @@ def train(
         plt.legend(["train", "test"], loc="lower left")
         plt.savefig(os.path.join(path_model, modelname + "_accuracy_vs_epochs.png"))
 
-        plot_roc(model_name, path_cube_test, path_model, 0.53)
-        plot_recall(model_name, path_cube_test, path_model, 0.53)
-        plot_prob_distribution(model_name, path_cube_test, path_model, 0.53)
+        plot_roc(model_name, path_cube_test, path_model)
+        plot_recall(model_name, path_cube_test, path_model)
+        plot_prob_distribution(model_name, path_cube_test, path_model, threshold)
         print_diagnostics(diags)
-        generate_cutouts(model_name, path_cube_test, path_model, 0.53)
+        generate_cutouts(model_name, path_cube_test, path_model, threshold)
 
     return history, diags

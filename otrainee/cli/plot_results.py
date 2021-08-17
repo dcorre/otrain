@@ -62,14 +62,12 @@ def main():
         args.path_model,
         args.path_cube_validation,
         args.path_plots,
-        threshold=args.threshold,
     )
 
     plot_recall(
         args.path_model,
         args.path_cube_validation,
         args.path_plots,
-        threshold=args.threshold,
     )
 
     plot_prob_distribution(
