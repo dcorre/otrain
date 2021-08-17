@@ -9,7 +9,7 @@ Author: David Corre, IAP, corre@iap.fr
 import argparse
 import warnings
 
-from tbd_cnn.train import train
+from otrainee.optimise_dataset_size import optimise_dataset_size
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
 
@@ -17,7 +17,7 @@ warnings.simplefilter(action="ignore", category=FutureWarning)
 def main():
 
     parser = argparse.ArgumentParser(
-        description="Train the CNN using the given datacube."
+        description="Train the CNN on different dataset sizes"
     )
 
     parser.add_argument(
@@ -54,13 +54,13 @@ def main():
     )
 
     parser.add_argument(
-        "--frac",
+        "--n_sections",
         dest="frac",
         required=False,
-        type=float,
-        default=0.15,
-        help="Fraction of the data used for the validation sample. "
-             "(Default: 0.15)",
+        type=int,
+        default=20,
+        help="The number of sections we want to divide the dataset into."
+        "(Default: 20)",
     )
 
     parser.add_argument(
@@ -69,13 +69,27 @@ def main():
         required=False,
         type=float,
         default=0.3,
-        help="Fraction used for each dropout. "
-             "(Default: 0.3)",
+        help="Fraction used for each dropout. " "(Default: 0.3)",
+    )
+
+    parser.add_argument(
+        "--outdir",
+        dest="outdir",
+        required=True,
+        type=str,
+        help="Path where to store the results.",
     )
 
     args = parser.parse_args()
-    train(args.path_cubename, args.path_model, args.modelname,
-          args.epochs, frac=args.frac, dropout=args.dropout)
+    optimise_dataset_size(
+        args.path_cubename,
+        args.path_model,
+        args.modelname,
+        args.epochs,
+        n_sections=args.frac,
+        dropout=args.dropout,
+        outdir=args.outdir,
+    )
 
 
 if __name__ == "__main__":

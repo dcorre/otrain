@@ -1,13 +1,13 @@
-# tbd_cnn: blabla
+# O'TRAINEE: Optical TRAnsient Identification NEtwork: Easy!
 
-* Documentation: https://tbd_cnn.readthedocs.io.
+* Documentation: https://otrainee.readthedocs.io.
 
 Development status
 --------------------
 
-[![Build Status](https://travis-ci.com/dcorre/gmadet.svg?branch=master)](https://travis-ci.com/dcorre/gmadet)
-[![codecov](https://codecov.io/gh/dcorre/gmadet/branch/master/graphs/badge.svg)](https://codecov.io/gh/dcorre/gmadet/branch/master)
-[![Documentation Status](https://readthedocs.org/projects/gmadet/badge/?version=latest)](https://gmadet.readthedocs.io/en/latest/?badge=latest)
+[![Build Status](https://travis-ci.com/dcorre/otrainee.svg?branch=master)](https://travis-ci.com/dcorre/otrainee)
+[![codecov](https://codecov.io/gh/dcorre/otrainee/branch/master/graphs/badge.svg)](https://codecov.io/gh/dcorre/otrainee/branch/master)
+[![Documentation Status](https://readthedocs.org/projects/otrainee/badge/?version=latest)](https://otrainee.readthedocs.io/en/latest/?badge=latest)
 
 
 Generic Tools to help identification of transients in astronomical images, based on Convolutional Neural Network.
@@ -15,8 +15,11 @@ Generic Tools to help identification of transients in astronomical images, based
 Aim
 ---
 
-* Implement a general tool based on machine learning to help identifying transient in astonmical images 
+* Implement a general tool based on machine learning to help identifying transient in astonmical images. 
+* Effortless execution through the command line.
+* Usable on different kind of images from different telescopes.
 * OS-independent, so that it can work on Windows, Mac OS and Linux machines.
+
 
 
 Features
@@ -26,14 +29,13 @@ Features
 * User provide image cutouts containing real and false transients.   
 * These cutouts are used to train a CNN algorithm implemented with [Keras](https://keras.io/).   
 * Built-in diagnostics help to characterise accuracy of training.   
-* Visualise class activation maps using Grad-CAM.   
 * Usage of trained model to classify any new cutouts
 
 
 Installation
 ------------
 
-See documentation: https://tbd_cnn.readthedocs.io.
+See documentation: https://otrainee.readthedocs.io.
 
 
 Credits
