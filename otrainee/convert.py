@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Author: David Corre, IAP, corre@iap.fr
+Authors: David Corre, IAP, corre@iap.fr
+         Damien Turpin, CEA-Saclay, damien.turpin@cea.fr
 
 """
 
@@ -14,7 +15,7 @@ import errno
 import numpy as np
 from astropy.io import fits
 import argparse
-from tbd_cnn.utils import rm_p, mkdir_p
+from otrainee.utils import rm_p, mkdir_p
 from math import floor
 
 def index_multiext_fits(hdul):
