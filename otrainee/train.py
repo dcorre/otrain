@@ -42,7 +42,7 @@ import argparse
 from tensorflow.keras.utils import multi_gpu_model
 from otrainee.utils import getpath, rm_p, mkdir_p
 
-from otrainee.plot_results import plot_roc, plot_recall, plot_prob_distribution
+from otrainee.plot_results import plot_roc, plot_recall, plot_prob_distribution, plot_f1_mcc
 from otrainee.diagnostics import get_diagnostics, generate_cutouts, print_diagnostics
 
 
@@ -261,6 +261,7 @@ def train(
 
         plot_roc(model_name, path_cube_test, path_model)
         plot_recall(model_name, path_cube_test, path_model)
+        plot_f1_mcc(model_name, path_cube_test, path_model)
         plot_prob_distribution(model_name, path_cube_test, path_model, threshold)
         print_diagnostics(diags)
         generate_cutouts(model_name, path_cube_test, path_model, threshold)

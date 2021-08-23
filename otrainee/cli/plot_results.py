@@ -7,7 +7,7 @@ import warnings
 import os
 import shutil
 
-from otrainee.plot_results import plot_roc, plot_recall, plot_prob_distribution
+from otrainee.plot_results import plot_roc, plot_recall, plot_f1_mcc, plot_prob_distribution
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
 
@@ -70,6 +70,11 @@ def main():
         args.path_plots,
     )
 
+    plot_f1_mcc(
+        args.path_model,
+        args.path_cube_validation,
+        args.path_plots,
+    )
     plot_prob_distribution(
         args.path_model, 
         args.path_cube_validation, 

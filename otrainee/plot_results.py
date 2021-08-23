@@ -13,7 +13,12 @@ import shutil
 import numpy as np
 import matplotlib.pyplot as plt
 from tensorflow import keras
-from sklearn.metrics import roc_curve, precision_recall_curve
+from sklearn.metrics import (
+    roc_curve,
+    precision_recall_curve,
+    matthews_corrcoef,
+    f1_score,
+)
 
 
 def get_results(path_model, path_cube_test):
@@ -32,7 +37,7 @@ def get_results(path_model, path_cube_test):
 
 
 def roc(path_plot, valt, labp, y_valid, val_name, val_max):
-    """plot the ROC curve corresponding to a certain range of: magnitude, 
+    """plot the ROC curve corresponding to a certain range of: magnitude,
     or uncertainty in magnitude"""
     plt.figure()
     plt.xlabel("FPR")
@@ -73,7 +78,7 @@ def roc(path_plot, valt, labp, y_valid, val_name, val_max):
 
 
 def recall(path_plot, valt, labp, y_valid, val_name, val_max):
-    """plot the precision-recall curve corresponding to a certain range: magnitude, 
+    """plot the precision-recall curve corresponding to a certain range: magnitude,
     or uncertainty in magnitude"""
     plt.figure()
     plt.xlabel("recall")
@@ -111,9 +116,54 @@ def recall(path_plot, valt, labp, y_valid, val_name, val_max):
     plt.figure()
 
 
-def plot_roc(
-    path_model, path_cube_test, path_plot, mag_max=25, errmag_max=0.4
-):
+def f1_mcc(path_plot, valt, labp, y_valid):
+    """plot the MCC - F1 for a list of thresholds,
+    in order to determine the best threshold"""
+    plt.figure()
+    plt.xlabel("F1 score")
+    plt.ylabel("MCC score")
+    thresholds = [0.01 * i for i in range(101)]
+    mcc = []
+    f1 = []
+    for thres in thresholds:
+        y_pred = [int(x[1] > thres) for i, x in enumerate(labp)]
+        mcc.append(matthews_corrcoef(y_valid, y_pred))
+        f1.append(f1_score(y_valid, y_pred))
+
+    # the best threshold corresponds to the value where both F1 score and MCC are maximized
+    # so we get the index of the maximum value of the sum (f1+MCC)
+    T = np.asarray([f1[i] + mcc[i] for i in range(len(mcc))])
+    best = np.argmax(T)
+    # We plot the curve
+    plt.plot(f1, mcc)
+    # we draw the point corresponding to the best threshold
+    plt.scatter(
+        f1[best],
+        mcc[best],
+        marker="o",
+        color="black",
+        label="Best threshold = %.2f" % thresholds[best],
+    )
+    plt.scatter(0, 0, marker="o", color="r", label="worst case")
+    plt.scatter(1, 1, marker="o", color="b", label="best case")
+    plt.legend(loc="upper left")
+    plt.grid(color="k", linestyle="--", linewidth=0.1)
+    plt.title("MCC-F1 Curve")
+    plt.tight_layout()
+    plt.savefig(os.path.join(path_plot, "model_F1_MCC.png"))
+
+    plt.figure()
+
+
+def plot_f1_mcc(path_model, path_cube_test, path_plot):
+    """plot f1-mcc curve and save figure in path_plot
+    under the name model_F1_MCC.png"""
+    errmagt, magt, labp, labt = get_results(path_model, path_cube_test)
+    y_valid = np.argmax(labt, axis=1)
+    f1_mcc(path_plot, errmagt, labp, y_valid)
+
+
+def plot_roc(path_model, path_cube_test, path_plot, mag_max=25, errmag_max=0.4):
     """plot ROC curves and save figures"""
     errmagt, magt, labp, labt = get_results(path_model, path_cube_test)
     y_valid = np.argmax(labt, axis=1)
@@ -124,9 +174,7 @@ def plot_roc(
     roc(path_plot, magt, labp, y_valid, "mag", mag_max)
 
 
-def plot_recall(
-    path_model, path_cube_test, path_plot, mag_max=25, errmag_max=0.4
-):
+def plot_recall(path_model, path_cube_test, path_plot, mag_max=25, errmag_max=0.4):
     """saves precision-recall plots"""
     errmagt, magt, labp, labt = get_results(path_model, path_cube_test)
     y_valid = np.argmax(labt, axis=1)
