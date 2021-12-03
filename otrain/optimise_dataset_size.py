@@ -10,8 +10,8 @@ import os
 
 import numpy as np
 import matplotlib.pyplot as plt
-from otrainee.train import train
-from otrainee.utils import mkdir_p
+from otrain.train import train
+from otrain.utils import mkdir_p
 
 
 def optimise_dataset_size(

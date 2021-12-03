@@ -15,7 +15,7 @@ import errno
 import numpy as np
 from astropy.io import fits
 import argparse
-from otrainee.utils import rm_p, mkdir_p
+from otrain.utils import rm_p, mkdir_p
 from math import floor
 
 def index_multiext_fits(hdul):

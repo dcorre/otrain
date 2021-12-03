@@ -9,7 +9,7 @@ Author: David Corre, IAP, corre@iap.fr
 import argparse
 import warnings
 
-from otrainee.infer import infer
+from otrain.infer import infer
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
 

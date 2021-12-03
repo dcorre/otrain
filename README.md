@@ -1,13 +1,13 @@
 # O'TRAINEE: Optical TRAnsient Identification NEtwork: Easy!
 
-* Documentation: https://otrainee.readthedocs.io.
+* Documentation: https://otrain.readthedocs.io.
 
 Development status
 --------------------
 
-[![Build Status](https://travis-ci.com/dcorre/otrainee.svg?branch=master)](https://travis-ci.com/dcorre/otrainee)
-[![codecov](https://codecov.io/gh/dcorre/otrainee/branch/master/graphs/badge.svg)](https://codecov.io/gh/dcorre/otrainee/branch/master)
-[![Documentation Status](https://readthedocs.org/projects/otrainee/badge/?version=latest)](https://otrainee.readthedocs.io/en/latest/?badge=latest)
+[![Build Status](https://travis-ci.com/dcorre/otrain.svg?branch=master)](https://travis-ci.com/dcorre/otrain)
+[![codecov](https://codecov.io/gh/dcorre/otrain/branch/master/graphs/badge.svg)](https://codecov.io/gh/dcorre/otrain/branch/master)
+[![Documentation Status](https://readthedocs.org/projects/otrain/badge/?version=latest)](https://otrain.readthedocs.io/en/latest/?badge=latest)
 
 
 Generic Tools to help identification of transients in astronomical images, based on Convolutional Neural Network.
@@ -35,7 +35,7 @@ Features
 Installation
 ------------
 
-See documentation: https://otrainee.readthedocs.io.
+See documentation: https://otrain.readthedocs.io.
 
 
 Credits

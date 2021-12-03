@@ -9,7 +9,7 @@ Author: David Corre, IAP, corre@iap.fr
 import argparse
 import warnings
 
-from otrainee.optimise_dataset_size import optimise_dataset_size
+from otrain.optimise_dataset_size import optimise_dataset_size
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
 

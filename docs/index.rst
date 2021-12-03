@@ -1,4 +1,4 @@
-Welcome to O'TRAINEE's documentation!
+Welcome to O'TRAIN's documentation!
 ======================================
 
 .. toctree::

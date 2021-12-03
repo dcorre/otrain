@@ -1,13 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""
+Author: David Corre, IAP, corre@iap.fr
+
+"""
 
 import argparse
 import warnings
-import os
-import shutil
 
-from otrainee.plot_results import plot_roc, plot_recall, plot_prob_distribution
+from otrain.diagnostics import print_diagnostics, get_diagnostics, generate_cutouts
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
 
@@ -31,15 +33,7 @@ def main():
         dest="path_model",
         required=True,
         type=str,
-        help="Path to the pretrained model, including it's name and extension",
-    )
-
-    parser.add_argument(
-        "--path-plots",
-        dest="path_plots",
-        required=True,
-        type=str,
-        help="Path where to store the plots",
+        help="Path where to the pretrained model, including it's name and extension",
     )
 
     parser.add_argument(
@@ -51,28 +45,30 @@ def main():
         help="The threshold to define classes True and False" "(Default: 0.5)",
     )
 
+    parser.add_argument(
+        "--path-diagnostics",
+        dest="path_diagnostics",
+        required=False,
+        type=str,
+        default="cnn_results",
+        help="path where to store the folders of the misclassified candidates",
+    )
+
     args = parser.parse_args()
-
-    # create the folder for the plots
-    if os.path.exists(args.path_plots):
-        shutil.rmtree(args.path_plots)
-    os.makedirs(args.path_plots, exist_ok=True)
-
-    plot_roc(
+    diags = get_diagnostics(
         args.path_model,
         args.path_cube_validation,
-        args.path_plots,
         threshold=args.threshold,
     )
 
-    plot_recall(
+    print_diagnostics(diags)
+
+    generate_cutouts(
         args.path_model,
         args.path_cube_validation,
-        args.path_plots,
+        args.path_diagnostics,
         threshold=args.threshold,
     )
-
-    plot_prob_distribution(args.path_model, args.path_cube_validation, args.path_plots)
 
 
 if __name__ == "__main__":

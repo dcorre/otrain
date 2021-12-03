@@ -27,7 +27,7 @@
 # 	along with Bertinoscopic. If not, see <http://www.gnu.org/licenses/>.
 #
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#    Original script modified by: David Corre (IJCLab/CNRS)
+#    Original script modified by: David Corre (IJCLab/CNRS), Kenza Makhlouf (ECL)
 
 import sys
 import os
@@ -39,11 +39,12 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 from tensorflow import keras
 import argparse
-from tensorflow.keras.utils import multi_gpu_model
-from otrainee.utils import getpath, rm_p, mkdir_p
+from tensorflow.python.keras.utils.multi_gpu_utils import multi_gpu_model
+#from tensorflow.keras.utils import multi_gpu_model
+from otrain.utils import getpath, rm_p, mkdir_p
 
-from otrainee.plot_results import plot_roc, plot_recall, plot_prob_distribution
-from otrainee.diagnostics import get_diagnostics, generate_cutouts, print_diagnostics
+from otrain.plot_results import plot_roc, plot_recall, plot_prob_distribution, plot_f1_mcc
+from otrain.diagnostics import get_diagnostics, generate_cutouts, print_diagnostics
 
 
 def build_model(ima, nclass, dropout=0.3):
@@ -56,35 +57,35 @@ def build_model(ima, nclass, dropout=0.3):
 
     model.add(
         keras.layers.Conv2D(
-            16, (3, 3), activation="elu", padding=padding, input_shape=ima.shape[1:]
+            16, (3, 3), activation="relu", padding=padding, input_shape=ima.shape[1:]
         )
     )
     model.add(
         keras.layers.Conv2D(
-            32, (3, 3), activation="elu", padding=padding, input_shape=ima.shape[1:]
+            32, (3, 3), activation="relu", padding=padding, input_shape=ima.shape[1:]
         )
     )
     # model.add(keras.layers.BatchNormalization())
     model.add(keras.layers.AveragePooling2D(pool_size=(2, 2)))
     # model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))
-    # model.add(keras.layers.Dropout(dprob[0]))
-    model.add(keras.layers.Conv2D(64, (3, 3), activation="elu", padding=padding))
+    model.add(keras.layers.Dropout(dprob[0]))
+    model.add(keras.layers.Conv2D(64, (3, 3), activation="relu", padding=padding))
     # model.add(keras.layers.BatchNormalization())
     model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))
     model.add(keras.layers.Dropout(dprob[1]))
-    model.add(keras.layers.Conv2D(128, (3, 3), activation="elu", padding=padding))
+    model.add(keras.layers.Conv2D(128, (3, 3), activation="relu", padding=padding))
     # model.add(keras.layers.BatchNormalization())
-    model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))
-    model.add(keras.layers.Dropout(dprob[1]))
-    model.add(keras.layers.Conv2D(256, (3, 3), activation="elu", padding=padding))
+    #model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))
+    #model.add(keras.layers.Dropout(dprob[1]))
+    model.add(keras.layers.Conv2D(256, (3, 3), activation="relu", padding=padding))
     # model.add(keras.layers.BatchNormalization())
     model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))
     # model.add(keras.layers.Dropout(dprob[2]))
     model.add(keras.layers.Flatten())
-    model.add(keras.layers.Dense(512, activation="elu"))
+    model.add(keras.layers.Dense(512, activation="relu"))
     # model.add(keras.layers.BatchNormalization())
     model.add(keras.layers.Dropout(dprob[2]))
-    model.add(keras.layers.Dense(256, activation="elu"))
+    model.add(keras.layers.Dense(256, activation="relu"))
     # model.add(keras.layers.BatchNormalization())
     # model.add(keras.layers.Dropout(0.3))
     model.add(keras.layers.Dense(nclass, activation="softmax"))
@@ -185,7 +186,7 @@ def train(
 
         parallel_model.compile(
             loss="categorical_crossentropy",
-            optimizer=keras.optimizers.Adam(lr=0.001),
+            optimizer=keras.optimizers.Adam(learning_rate=0.001),
             # optimizer=keras.optimizers.Nadam(),
             metrics=["accuracy"],
         )
@@ -208,7 +209,7 @@ def train(
     else:
         model.compile(
             loss="categorical_crossentropy",
-            optimizer=keras.optimizers.Adam(lr=0.001),
+            optimizer=keras.optimizers.Adam(learning_rate=0.001),
             # optimizer=keras.optimizers.Nadam(),
             metrics=["accuracy"],
         )
@@ -246,6 +247,7 @@ def train(
         axis.set_ylabel("loss")
         plt.plot(history.history["loss"])
         plt.plot(history.history["val_loss"])
+        plt.grid(color="k", linestyle="--", linewidth=0.1)
         plt.title("model loss")
         plt.legend(["train", "test"], loc="upper left")
         plt.savefig(os.path.join(path_model, modelname + "_loss_vs_epochs.png"))
@@ -255,14 +257,16 @@ def train(
         axis.set_ylabel("accuracy")
         plt.plot(history.history["accuracy"])
         plt.plot(history.history["val_accuracy"])
+        plt.grid(color="k", linestyle="--", linewidth=0.1)
         plt.title("model accuracy")
         plt.legend(["train", "test"], loc="lower left")
         plt.savefig(os.path.join(path_model, modelname + "_accuracy_vs_epochs.png"))
 
-        plot_roc(model_name, path_cube_test, path_model, 0.53)
-        plot_recall(model_name, path_cube_test, path_model, 0.53)
-        plot_prob_distribution(model_name, path_cube_test, path_model)
+        plot_roc(model_name, path_cube_test, path_model)
+        plot_recall(model_name, path_cube_test, path_model)
+        plot_f1_mcc(model_name, path_cube_test, path_model)
+        plot_prob_distribution(model_name, path_cube_test, path_model, threshold)
         print_diagnostics(diags)
-        generate_cutouts(model_name, path_cube_test, path_model, 0.53)
+        generate_cutouts(model_name, path_cube_test, path_model, threshold)
 
     return history, diags

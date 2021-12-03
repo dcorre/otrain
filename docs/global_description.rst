@@ -25,7 +25,7 @@ If you are using the Docker image, remember to launch once the container:
 
 .. code-block:: console
 
-   docker run --name gmad -dit -v /path_to_your_data/:/home/newuser/data/  dcorre/otrainee
+   docker run --name gmad -dit -v /path_to_your_data/:/home/newuser/data/  dcorre/otrain
 
 Replace:
 
@@ -33,7 +33,7 @@ Replace:
 * ``/path_to_your_data/`` with the path on your machine pointing to the data you want to analyse.
 
 
-Then you only need to prepend `docker exec otrainee` to the commands given below to execute them within the container instead of your machine.
+Then you only need to prepend `docker exec otrain` to the commands given below to execute them within the container instead of your machine.
 
 
 Classify true and false candidates
@@ -50,19 +50,20 @@ Once you have classified your candidates, the next step is to trained the CNN al
 
 .. code-block:: console
 
-    otrainee-convert --path PATH_DATACUBE --cube CUBENAME --cutouts PATH_CUTOUTS
+    otrain-convert --path PATH_DATACUBE --cube CUBENAME --cutouts PATH_CUTOUTS --frac_true FRAC_TRUE
 
 Replace:
 
 * ``PATH_DATACUBE`` with the pah where you want to store your datacube.
 * ``CUBENAME`` with the name of the datacube that will be created.
 * ``PATH_CUTOUTS`` with the path to the folder containing the ``true`` and ``false`` folders.
+* ``FRAC_TRUE`` with the fraction of the True events you want in the final datacube.
 
 For example:
 
 .. code-block:: console
 
-    otrainee-convert --path datacube_test --cube cube --cutouts candidates_training
+    otrain-convert --path datacube_test --cube cube --cutouts candidates_training --frac_true 0.5
 
 The cutouts are taken from the ``False`` and ``True`` folders in ``candidates_training/`` and the cube will be created in ``datacube_test/cube.npz``
 
@@ -74,7 +75,7 @@ Then you can start the training:
 
 .. code-block:: console
 
-    otrainee-train --cube PATH_CUBENAME --model-path PATH_MODEL --model-name MODELNAME
+    otrain-train --cube PATH_CUBENAME --model-path PATH_MODEL --model-name MODELNAME
 
 Replace:
 
@@ -85,7 +86,7 @@ Replace:
 For example:
 .. code-block:: console
 
-    otrainee-train --cube datacube_test/cube.npz --model-path model --model-name test
+    otrain-train --cube datacube_test/cube.npz --model-path model --model-name test
 
 The model will be stored in ``model/CNN_training/test.h5``
 
@@ -93,12 +94,12 @@ The model will be stored in ``model/CNN_training/test.h5``
 Apply a trained model on candidates
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-It assumes that you already ran ``otrainee`` on a set of images. For instance you have a ``candidates/`` folder containing the cutouts that need to be classified by the CNN algorithm. 
+It assumes that you already ran ``otrain`` on a set of images. For instance you have a ``candidates/`` folder containing the cutouts that need to be classified by the CNN algorithm. 
 
 
 .. code-block:: console
 
-    otrainee-infer --cutouts PATH_CUTOUTS --model PATH_MODEL
+    otrain-infer --cutouts PATH_CUTOUTS --model PATH_MODEL
 
 Replace:
 
@@ -109,16 +110,16 @@ For example:
 
 .. code-block:: console
 
-    otrainee-infer --cutouts candidates --model model/CNN_training/test.h5
+    otrain-infer --cutouts candidates --model model/CNN_training/test.h5
 
 It will result a file ``infer_results.dat`` in the directory defined with ``--cutouts``, containing the probability that a source is a false (column: label0) or true (column: label1) transient.    
 You can then apply a threshold on these probability to keep only some candidates. 
 
-To visualize how these probabilities evolve with some of the candidates parameters (magnitude, FWHM) of your sample, you can use ``otrainee-checkinfer``.
+To visualize how these probabilities evolve with some of the candidates parameters (magnitude, FWHM) of your sample, you can use ``otrain-checkinfer``.
 
 .. code-block:: console
 
-    otrainee-checkinfer --plots PATH_PLOTS --crossmatch PATH_CROSSMATCH --infer PATH_INFER
+    otrain-checkinfer --plots PATH_PLOTS --crossmatch PATH_CROSSMATCH --infer PATH_INFER
 
 Replace:
 
@@ -127,13 +128,13 @@ Replace:
 * ``PATH_INFER`` with the path where the ``infer_results.dat`` is stored.
 
 
-Type ``otrainee-cnn_checkinfer -h`` to see the other optional arguments.
+Type ``otrain-cnn_checkinfer -h`` to see the other optional arguments.
 
 For example:
 
 .. code-block:: console
 
-    otrainee-checkinfer --plots otrainee_plots --crossmatch .  --infer candidates
+    otrain-checkinfer --plots otrain_plots --crossmatch .  --infer candidates
 
 It will results a folder ``CheckInfer`` containing some plots illustrating the dependence of the probability that a candidate is a true transient (returned by the CNN algorithm) as a function of magnitude and FWHM ratio (so far, can include more check in the future). It also compares this evolution for the simulated soures with respect to the non-simulated sources. It is also useful to get an idea of the FWHM ratio range that can be applied to filter the candidates.
 
@@ -146,5 +147,5 @@ Ideally the training should be done on a few tens of images with taken in differ
 
 Of course, if the computational time is not a constraint for you, it will be more accurate to perform a training on the images you want to analyse only, if you have a sufficient number of them.
 
-Regarding the total number of transients required for an accurate training, you can start with a large number of cutouts and can use ``otrainee-optimise-dataset-size`` to find out the minimum acceptable size. 
+Regarding the total number of transients required for an accurate training, you can start with a large number of cutouts and can use ``otrain-optimise-dataset-size`` to find out the minimum acceptable size. 
 
