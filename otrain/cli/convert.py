@@ -57,7 +57,7 @@ def main():
         "--cutout-size",
         dest="cutout_size",
         required=False,
-        default=10000,
+        default=-1,
         type=int,
         help="Size of the cutout in pixels, NxN pixels",
     )
