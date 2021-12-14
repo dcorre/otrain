@@ -1,4 +1,4 @@
-# O'TRAINEE: Optical TRAnsient Identification NEtwork: Easy!
+# O'TRAIN: Optical TRAnsient Identification NEtwork: Easy!
 
 * Documentation: https://otrain.readthedocs.io.
 
