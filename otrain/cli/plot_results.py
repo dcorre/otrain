@@ -1,15 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""
-Author: David Corre, IAP, corre@iap.fr
-
-"""
 
 import argparse
 import warnings
+import os
+import shutil
 
-from otrainee.diagnostics import print_diagnostics, get_diagnostics, generate_cutouts
+from otrain.plot_results import plot_roc, plot_recall, plot_f1_mcc, plot_prob_distribution
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
 
@@ -33,7 +31,15 @@ def main():
         dest="path_model",
         required=True,
         type=str,
-        help="Path where to the pretrained model, including it's name and extension",
+        help="Path to the pretrained model, including it's name and extension",
+    )
+
+    parser.add_argument(
+        "--path-plots",
+        dest="path_plots",
+        required=True,
+        type=str,
+        help="Path where to store the plots",
     )
 
     parser.add_argument(
@@ -45,28 +51,34 @@ def main():
         help="The threshold to define classes True and False" "(Default: 0.5)",
     )
 
-    parser.add_argument(
-        "--path-diagnostics",
-        dest="path_diagnostics",
-        required=False,
-        type=str,
-        default="cnn_results",
-        help="path where to store the folders of the misclassified candidates",
-    )
-
     args = parser.parse_args()
-    diags = get_diagnostics(
+
+    # create the folder for the plots
+    if os.path.exists(args.path_plots):
+        shutil.rmtree(args.path_plots)
+    os.makedirs(args.path_plots, exist_ok=True)
+
+    plot_roc(
         args.path_model,
         args.path_cube_validation,
-        threshold=args.threshold,
+        args.path_plots,
     )
 
-    print_diagnostics(diags)
-
-    generate_cutouts(
+    plot_recall(
         args.path_model,
         args.path_cube_validation,
-        args.path_diagnostics,
+        args.path_plots,
+    )
+
+    plot_f1_mcc(
+        args.path_model,
+        args.path_cube_validation,
+        args.path_plots,
+    )
+    plot_prob_distribution(
+        args.path_model, 
+        args.path_cube_validation, 
+        args.path_plots,
         threshold=args.threshold,
     )
 

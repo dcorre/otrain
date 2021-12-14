@@ -9,7 +9,7 @@ Authors: David Corre, IAP, corre@iap.fr
 import argparse
 import warnings
 
-from otrainee.grad_cam import main_grad_cam
+from otrain.grad_cam import main_grad_cam
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
 

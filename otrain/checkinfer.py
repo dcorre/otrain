@@ -10,7 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from astropy.io import ascii
 from astropy.table import Table
-from otrainee.utils import mkdir_p
+from otrain.utils import mkdir_p
 
 
 class SortRes:

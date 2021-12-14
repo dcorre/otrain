@@ -20,7 +20,7 @@ import astropy.coordinates as coord
 from astropy.table import Table
 
 from keras import activations
-from otrainee.utils import getpath, rm_p, mkdir_p
+from otrain.utils import getpath, rm_p, mkdir_p
 import matplotlib.pyplot as plt
 
 
