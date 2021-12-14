@@ -15,8 +15,14 @@ import errno
 import numpy as np
 from astropy.io import fits
 import argparse
-from otrainee.utils import rm_p, mkdir_p
+from otrain.utils import rm_p, mkdir_p
 from math import floor
+
+def crop_center(img,cropx,cropy):
+    y,x = img.shape
+    startx = x//2-(cropx//2)
+    starty = y//2-(cropy//2)    
+    return img[starty:starty+cropy,startx:startx+cropx]
 
 def index_multiext_fits(hdul):
     
@@ -28,7 +34,7 @@ def index_multiext_fits(hdul):
     
     return index_hdul_diff
 
-def convert(path_datacube, cubename, path_cutouts, frac_true):
+def convert(path_datacube, cubename, path_cutouts, frac_true, cutout_size):
     """Convert simulated data before starting training"""
 
     outdir = os.path.join(path_datacube, "datacube")
@@ -73,7 +79,11 @@ def convert(path_datacube, cubename, path_cutouts, frac_true):
                         filters += [head["FILTER"]]
                         cand_ids += [head["CANDID"]]
                         fwhms += [head["FWHM"]]
-                        cube.append(hdus[0].data)
+                        if cutout_size == -1:
+                            cube.append(hdus[0].data)
+                        else:
+                            cube.append(crop_center(hdus[0].data,
+                                                    cutout_size,cutout_size))
                 else:
                     
                     labels += [1]
@@ -107,7 +117,11 @@ def convert(path_datacube, cubename, path_cutouts, frac_true):
                     
                     fwhms += [head["FWHM"]]
                     
-                    cube.append(hdus[index_multiext_fits(hdus)].data)
+                    if cutout_size == -1:
+                            cube.append(hdus[index_multiext_fits(hdus)].data)
+                    else:
+                        cube.append(crop_center(hdus[index_multiext_fits(hdus)].data,
+                                        cutout_size,cutout_size))
                 hdus.close()
             else:
                 head = hdus[0].header
@@ -121,7 +135,11 @@ def convert(path_datacube, cubename, path_cutouts, frac_true):
                     filters += [head["FILTER"]]
                     cand_ids += [head["CANDID"]]
                     fwhms += [head["FWHM"]]
-                    cube.append(hdus[0].data)
+                    if cutout_size == -1:
+                        cube.append(hdus[0].data)
+                    else:
+                        cube.append(crop_center(hdus[0].data,
+                                                cutout_size,cutout_size))
                 hdus.close()
         else:
             break
@@ -143,7 +161,11 @@ def convert(path_datacube, cubename, path_cutouts, frac_true):
                         filters += [head["FILTER"]]
                         cand_ids += [head["CANDID"]]
                         fwhms += [head["FWHM"]]
-                        cube.append(hdus[0].data)
+                        if cutout_size == -1:
+                            cube.append(hdus[0].data)
+                        else:
+                            cube.append(crop_center(hdus[0].data,
+                                                    cutout_size,cutout_size))
                 else:
                     labels += [0]
                     if 'HIERARCH mag_calib' in head:
@@ -174,8 +196,12 @@ def convert(path_datacube, cubename, path_cutouts, frac_true):
                         cand_ids += cand
                         
                     fwhms += [head["FWHM"]]
+                    if cutout_size == -1:
+                            cube.append(hdus[index_multiext_fits(hdus)].data)
+                    else:
+                        cube.append(crop_center(hdus[index_multiext_fits(hdus)].data,
+                                        cutout_size,cutout_size))
                     
-                    cube.append(hdus[index_multiext_fits(hdus)].data)
                 hdus.close()
             else:
                 head = hdus[0].header
@@ -189,7 +215,11 @@ def convert(path_datacube, cubename, path_cutouts, frac_true):
                     filters += [head["FILTER"]]
                     cand_ids += [head["CANDID"]]
                     fwhms += [head["FWHM"]]
-                    cube.append(hdus[0].data)
+                    if cutout_size == -1:
+                        cube.append(hdus[0].data)
+                    else:
+                        cube.append(crop_center(hdus[0].data,
+                                                cutout_size,cutout_size))
                 hdus.close()
         else:
             break

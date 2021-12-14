@@ -39,6 +39,7 @@ def get_results(path_model, path_cube_test):
 def roc(path_plot, valt, labp, y_valid, val_name, val_max):
     """plot the ROC curve corresponding to a certain range of: magnitude,
     or uncertainty in magnitude"""
+        
     plt.figure()
     plt.xlabel("FPR")
     plt.ylabel("TPR")
@@ -67,8 +68,8 @@ def roc(path_plot, valt, labp, y_valid, val_name, val_max):
 
             # plt.scatter(fpr[ix], tpr[ix], marker='o', color='black', label='Best = %f' % thresholds[ix])
         lim_min = lim
-    # plt.plot([0, 0, 1], [0, 1, 1],color="k", linestyle="--", label="ideal")
-    # plt.plot([0, 1], [0, 1],color="k", linestyle="-.", label = "no skill")
+    plt.plot([0, 0, 1], [0, 1, 1],color="k", linestyle="--", label="ideal")
+    plt.plot([0, 1], [0, 1],color="k", linestyle="-.", label = "no skill")
 
     plt.legend(loc="lower right")
     plt.grid(color="k", linestyle="--", linewidth=0.1)
@@ -205,6 +206,7 @@ def plot_prob_distribution(path_model, path_cube_test, path_plot, threshold=0.53
     plt.title("Probability distribution")
     plt.ylabel("Frequency")
     plt.xlabel("probability")
+    plt.grid(color="k", linestyle="--", linewidth=0.1)
     plt.legend(loc="upper center")
     plt.tight_layout()
     plt.savefig(os.path.join(path_plot, "prob_distribution.png"))

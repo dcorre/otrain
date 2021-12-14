@@ -21,3 +21,4 @@ hjson
 keras
 tensorflow
 opencv-python-headless
+sklearn

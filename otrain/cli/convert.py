@@ -9,7 +9,7 @@ Author: David Corre, IAP, corre@iap.fr
 import argparse
 import warnings
 
-from otrainee.convert import convert
+from otrain.convert import convert
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
 
@@ -52,6 +52,15 @@ def main():
         type=float,
         help="Fraction of true candidates to be included in the training set. Flat between 0 and 1.",
     )
+    
+    parser.add_argument(
+        "--cutout-size",
+        dest="cutout_size",
+        required=False,
+        default=10000,
+        type=int,
+        help="Size of the cutout in pixels, NxN pixels",
+    )
 
     args = parser.parse_args()
     convert(
@@ -59,6 +68,7 @@ def main():
         cubename=args.cubename,
         path_cutouts=args.path_cutouts,
         frac_true=args.frac_true,
+        cutout_size=args.cutout_size
     )
 
 

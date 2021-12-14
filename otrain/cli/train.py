@@ -9,7 +9,7 @@ Author: David Corre, IAP, corre@iap.fr
 import argparse
 import warnings
 
-from otrainee.train import train
+from otrain.train import train
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
 
@@ -76,8 +76,8 @@ def main():
         dest="threshold",
         required=False,
         type=float,
-        default=0.53,
-        help="Threshold used for diagnostics. " "(Default: 0.53)",
+        default=0.5,
+        help="Threshold used for diagnostics. " "(Default: 0.5)",
     )
 
     args = parser.parse_args()

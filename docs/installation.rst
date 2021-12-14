@@ -17,7 +17,7 @@ Prerequisites
 
 For both ways you will need to get the project first.
 
-The sources for otrainee can be downloaded from the `Github repo`_.
+The sources for otrain can be downloaded from the `Github repo`_.
 
 * Either clone public repository:
 
@@ -27,7 +27,7 @@ The sources for otrainee can be downloaded from the `Github repo`_.
 
 .. code-block:: console
 
-    git clone git://github.com/dcorre/otrainee
+    git clone git://github.com/dcorre/otrain
 
 Note that you will need to update the project regularly to check for updates. Ideally each time you want to use it, type the following command to search for updates:
 
@@ -42,7 +42,7 @@ Note that you will need to update the project regularly to check for updates. Id
 
 .. code-block:: console
 
-    curl  -OL https://github.com/dcorre/otrainee/tarball/master
+    curl  -OL https://github.com/dcorre/otrain/tarball/master
 
 Cloning the project allows to retrieve easily future code updates. If you downloaded the project, you will need to download it again to retrieve future updates.
 
@@ -70,14 +70,14 @@ You can test that Docker is installed correctly and can be run without sudo:
    docker run hello-world
 
 
-Download the otrainee Docker image
+Download the otrain Docker image
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 To retrieve the Docker image:
 
 .. code-block:: console
 
-   docker pull dcorre/otrainee
+   docker pull dcorre/otrain
 
 Check that it appears in the list of images:
 
@@ -100,7 +100,7 @@ Python 3 environment:
 
 .. code-block:: console
 
-    conda create -n otrainee python=3 numpy scipy matplotlib astropy h5py scikit-image
+    conda create -n otrain python=3.8 numpy scipy matplotlib astropy h5py scikit-image
 
 
 Activate the environment:
@@ -108,7 +108,7 @@ Activate the environment:
 
 .. code-block:: console
 
-    conda activate otrainee
+    conda activate otrain
 
 
 Install other libraries
@@ -118,11 +118,11 @@ Once you have activated the environment, install the packages that are not avail
 
 .. code-block:: console
 
-    python3 -m pip install keras tensorflow opencv-python-headless
+    python3 -m pip install keras tensorflow opencv-python-headless sklearn
 
 
-.. _Github repo: https://github.com/dcorre/otrainee
-.. _tarball: https://github.com/dcorre/otrainee/tarball/master
+.. _Github repo: https://github.com/dcorre/otrain
+.. _tarball: https://github.com/dcorre/otrain/tarball/master
 
 
 Testing that it is working
@@ -135,9 +135,9 @@ Run the Docker image in the background:
 
 .. code-block:: console
 
-   docker run --name otrainee -dit -v /path_to_your_data/:/home/newuser/data/ dcorre/otrainee
+   docker run --name otrain -dit -v /path_to_your_data/:/home/newuser/data/ dcorre/otrain
 
-| This means that you run the docker image `dcorre/otrainee`, and give the name `otrainee` to the created container.
+| This means that you run the docker image `dcorre/otrain`, and give the name `otrain` to the created container.
 | `-d` runs the container in backgound.   
 | `-i` gives the possibility to enter in the container to run commands interactively in a bash terminal.
 | `-t` allocates a pseudo-TTY. 
@@ -148,18 +148,18 @@ Once you have executed this command, you can run any command in the container by
 
 .. code-block:: console
 
-   docker exec otrainee ls
-   docker exec otrainee pwd
+   docker exec otrain ls
+   docker exec otrain pwd
    
-to make a `ls` or a `pwd` in the container named `otrainee`, or any other bash commands.
+to make a `ls` or a `pwd` in the container named `otrain`, or any other bash commands.
 
-**In the following, if you are using a Docker image just prepend the command `docker exec otrainee` to run the given commands within the container instead of your machine.** 
+**In the following, if you are using a Docker image just prepend the command `docker exec otrain` to run the given commands within the container instead of your machine.** 
 
 The container is alive as long as you do not shut down your machine. It is important to know that you can not give the same name to two containers. So if for some reasons you need to remove the current container to start a new one, type:
 
 .. code-block:: console
 
-   docker rm otrainee
+   docker rm otrain
 
 You can list the containers, active or not, on your machine with:
 
@@ -169,7 +169,7 @@ You can list the containers, active or not, on your machine with:
 
 
 
-Install otrainee
+Install otrain
 ^^^^^^^^^^^^^^^^
 -----------------------
 Inside the Docker image
@@ -187,13 +187,13 @@ Without Docker image
 
 
 
-Run otrainee on a test image
+Run otrain on a test image
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To test if otrainee is running normally:
+To test if otrain is running normally:
 
 .. code-block:: console
 
-   otrainee-train -h
+   otrain-train -h
 
 It should return you the list of accepted arguments for this executable.
